@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #1A3E6E;
+  --accent:  #C8A84B;
+}
+
+/* 冊子ビューア：コピー・右クリック・印刷防止 */
+.book-viewer {
+  user-select: none;
+  -webkit-user-select: none;
+}
+.book-viewer img {
+  pointer-events: none;
+  draggable: false;
+}
+@media print {
+  .book-viewer { display: none !important; }
+}

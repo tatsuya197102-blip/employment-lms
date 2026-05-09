@@ -1,0 +1,45 @@
+// firestore.rules  (完全版)
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() { return request.auth != null; }
+    function isAdmin(companyId) {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/companies/$(companyId)/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    function isSelf(userId) { return isSignedIn() && request.auth.uid == userId; }
+
+    // userIndex：本人のみ読み取り可（Cloud Functionsが書き込む）
+    match /userIndex/{userId} {
+      allow read:  if isSelf(userId);
+      allow write: if false;
+    }
+
+    // クイズ問題バンク：認証済みのみ読み取り可
+    match /quizBank/{moduleId} {
+      allow read:  if isSignedIn();
+      allow write: if false;
+    }
+
+    // 企業データ
+    match /companies/{companyId} {
+      allow read:  if isAdmin(companyId);
+      allow write: if false;
+
+      match /users/{userId} {
+        allow read:  if isSelf(userId) || isAdmin(companyId);
+        allow write: if false;
+
+        match /progress/{moduleId} {
+          allow read:   if isSelf(userId) || isAdmin(companyId);
+          allow create: if isSelf(userId) && !('passedAt' in request.resource.data);
+          allow update: if isSelf(userId) &&
+            !('passedAt' in request.resource.data) &&
+            (!('passedAt' in resource.data) ||
+             resource.data.passedAt == request.resource.data.passedAt);
+        }
+      }
+    }
+  }
+}
