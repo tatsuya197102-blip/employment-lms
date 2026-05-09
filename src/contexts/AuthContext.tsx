@@ -1,6 +1,4 @@
 'use client'
-// src/contexts/AuthContext.tsx
-
 import { createContext, useContext, useEffect, useState } from 'react'
 import {
   onAuthStateChanged,
@@ -37,16 +35,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsub = onAuthStateChanged(auth, async (u) => {
       setUser(u)
       if (u) {
-        // Firestoreからユーザー情報取得
-        // companyId は custom claim に持たせる想定（Phase 2で実装）
-        // 暫定：uid と同名のドキュメントを検索
         try {
           const snap = await getDoc(doc(db, 'userIndex', u.uid))
           if (snap.exists()) {
             const { companyId } = snap.data() as { companyId: string }
-            const userSnap = await getDoc(
-              doc(db, 'companies', companyId, 'users', u.uid)
-            )
+            const userSnap = await getDoc(doc(db, 'companies', companyId, 'users', u.uid))
             if (userSnap.exists()) {
               setLmsUser({ ...(userSnap.data() as LmsUser), companyId })
             }
