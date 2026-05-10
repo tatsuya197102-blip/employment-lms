@@ -70,7 +70,7 @@ export default function LearnDashboard() {
                 修了証を見る
               </Link>
             )}
-            <button onClick={signOut} className="text-xs text-white/70 hover:text-white">
+<button onClick={async () => { await signOut(); window.location.href = '/' }} className="text-xs text-white/70 hover:text-white">
               ログアウト
             </button>
           </div>
