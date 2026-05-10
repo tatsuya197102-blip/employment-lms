@@ -1,5 +1,5 @@
 import {
-  doc, getDoc, setDoc, updateDoc, arrayUnion,
+  doc, getDoc, getDocs, setDoc, updateDoc, arrayUnion, collection,
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import type { ModuleProgress, QuizAttempt } from '@/types/lms'
@@ -12,6 +12,17 @@ export async function getModuleProgress(
 ): Promise<ModuleProgress | null> {
   const snap = await getDoc(progressRef(companyId, userId, moduleId))
   return snap.exists() ? (snap.data() as ModuleProgress) : null
+}
+
+// 全モジュールの進捗を1回のコレクション取得でまとめて取得（スマホ高速化）
+export async function getAllModuleProgress(
+  companyId: string, userId: string
+): Promise<Record<string, ModuleProgress | null>> {
+  const colRef = collection(db, 'companies', companyId, 'users', userId, 'progress')
+  const snap = await getDocs(colRef)
+  const result: Record<string, ModuleProgress | null> = {}
+  snap.forEach(d => { result[d.id] = d.data() as ModuleProgress })
+  return result
 }
 
 export async function updateBookProgress(

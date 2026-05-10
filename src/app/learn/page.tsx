@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
-import { getModuleProgress } from '@/lib/firestore/progress'
+import { getModuleProgress, getAllModuleProgress } from '@/lib/firestore/progress'
 import { MODULES } from '@/types/lms'
 import type { ModuleProgress } from '@/types/lms'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
@@ -19,12 +19,9 @@ export default function LearnDashboard() {
   useEffect(() => {
     if (!user || !lmsUser) return
     const fetchAll = async () => {
-      const entries = await Promise.all(
-        MODULES.map(async m => {
-          const p = await getModuleProgress(lmsUser.companyId, user.uid, m.id)
-          return [m.id, p] as [string, ModuleProgress | null]
-        })
-      )
+      const allProgress = await getAllModuleProgress(lmsUser.companyId, user.uid)
+      // 未取得のモジュールはnullで補完
+      const entries = MODULES.map(m => [m.id, allProgress[m.id] ?? null] as [string, ModuleProgress | null])
       setProgressMap(Object.fromEntries(entries))
       setLoading(false)
     }
