@@ -1,5 +1,4 @@
 'use client'
-// src/app/admin/layout.tsx
 
 import { useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
@@ -15,20 +14,25 @@ const NAV = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, lmsUser, loading, signOut } = useAuth()
-  const router   = useRouter()
+  const router = useRouter()
   const pathname = usePathname()
+
+  const isLoginPage = pathname === '/admin/login'
 
   useEffect(() => {
     if (loading) return
+    if (isLoginPage) return  // ログイン画面では認証チェックをスキップ
     if (!user) { router.replace('/admin/login'); return }
     if (lmsUser && lmsUser.role !== 'admin') { router.replace('/learn'); }
-  }, [user, lmsUser, loading, router])
+  }, [user, lmsUser, loading, isLoginPage, router])
+
+  // ログイン画面はそのまま表示（認証ガード対象外）
+  if (isLoginPage) return <>{children}</>
 
   if (loading || !user || (lmsUser && lmsUser.role !== 'admin')) return <LoadingSpinner />
 
   return (
     <div className="min-h-screen bg-[#F4F2EE] flex">
-      {/* サイドバー */}
       <aside className="w-56 bg-primary text-white flex flex-col shrink-0">
         <div className="px-5 py-6 border-b border-white/10">
           <p className="font-bold text-sm">外国人雇用LMS</p>
@@ -53,7 +57,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </aside>
 
-      {/* メインコンテンツ */}
       <main className="flex-1 overflow-auto">
         {children}
       </main>
