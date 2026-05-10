@@ -132,10 +132,11 @@ export default function ModulePage() {
                 )}
               </>
             ) : (
-              <div className="aspect-video bg-gray-100 rounded-xl flex items-center justify-center">
-                <div className="text-center text-gray-400">
-                  <p className="text-4xl mb-2">▶</p>
-                  <p className="text-sm">YouTube動画のタイトルに <strong>{mod.youtubeTag}</strong> タグを追加すると自動表示されます</p>
+              <div className="aspect-video bg-primary rounded-xl flex items-center justify-center">
+                <div className="text-center px-8">
+                  <p className="text-5xl mb-4">📋</p>
+                  <p className="text-white text-lg font-bold mb-2">このモジュールは冊子・クイズで学習します</p>
+                  <p className="text-white/60 text-sm">動画コンテンツはありません。下の「冊子を読む」ボタンから学習を進めてください。</p>
                 </div>
               </div>
             )}
