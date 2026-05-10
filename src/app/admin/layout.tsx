@@ -21,12 +21,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     if (loading) return
-    if (isLoginPage) return  // ログイン画面では認証チェックをスキップ
+    if (isLoginPage) return
     if (!user) { router.replace('/admin/login'); return }
     if (lmsUser && lmsUser.role !== 'admin') { router.replace('/learn'); }
   }, [user, lmsUser, loading, isLoginPage, router])
 
-  // ログイン画面はそのまま表示（認証ガード対象外）
+  const handleSignOut = async () => {
+    await signOut()
+    window.location.href = '/'
+  }
+
   if (isLoginPage) return <>{children}</>
 
   if (loading || !user || (lmsUser && lmsUser.role !== 'admin')) return <LoadingSpinner />
@@ -51,7 +55,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </nav>
         <div className="px-5 py-4 border-t border-white/10">
           <p className="text-xs text-white/50 truncate mb-2">{user.email}</p>
-          <button onClick={signOut} className="text-xs text-white/60 hover:text-white">
+          <button onClick={handleSignOut} className="text-xs text-white/60 hover:text-white">
             ログアウト
           </button>
         </div>
