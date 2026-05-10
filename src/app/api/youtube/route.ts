@@ -1,50 +1,29 @@
-// src/app/api/youtube/route.ts
-// YouTube Data API v3 で【M1】〜【M14】タグを検索し自動マッピング
+﻿// src/app/api/youtube/route.ts
+// 【M1】〜【M14】タグ別スタティックマップ
 
 import { NextResponse } from 'next/server'
 
-interface YouTubeItem {
-  id: { videoId: string }
-  snippet: { title: string; description: string }
+const STATIC_VIDEO_MAP: Record<string, string[]> = {
+  M1:  ['N7jSKHnx8n8', '0APNyc8vOsw', '4fem9NW1mzA'],
+  M2:  ['87Gy87gbE0k', 'zcN3A-5nWi4', '59WiSYTym9M', 'auyLoumoE1Y', '6ukU5r_LRBY'],
+  M3:  ['_aFYLMRQoKA', '1qAwxWVCS2M', 'cQFR82_5osM', 'pN7K5YdyLx0'],
+  M4:  ['6lNdrP1phBU'],
+  M5:  ['OV-gjcwuz4o'],
+  M6:  ['U2DtGRThDvE'],
+  M7:  ['DiHYIoCgEfk', 'Xf02k-9qoJU'],
+  M8:  ['2lAY7y9esbA', 'utDVMwj1Tko'],
+  M9:  ['vzrvCqfhvg4', 'oo2BfVth1qM', 'eKsIm4EUpzM', '8kAp7w8Cmew'],
+  M10: ['xB6-e5AY8IM', '2mcHJfnc1yo'],
+  M11: ['5hhknVhHCfE', 'k6LkyvAbI48', 'mmJKOaTAW2k', '6yJrzHAPLjE', 'OL-A5OTeVxs', 'TuHIPHas7cs'],
+  M12: [],
+  M13: ['5FdfDSk6MSs', '0B-5nnJRUyo', 'pvnib9ImvRo'],
+  M14: ['aomuI4EV4E4'],
 }
 
 export async function GET() {
-  const apiKey    = process.env.YOUTUBE_API_KEY
-  const channelId = process.env.YOUTUBE_CHANNEL_ID
-
-  if (!apiKey || !channelId) {
-    return NextResponse.json({ error: 'YOUTUBE_API_KEY or YOUTUBE_CHANNEL_ID not set' }, { status: 500 })
-  }
-
-  const moduleIds = Array.from({ length: 14 }, (_, i) => `M${i + 1}`)
-  const result: Record<string, string[]> = {}
-
-  for (const moduleId of moduleIds) {
-    const tag = `【${moduleId}】`
-    const url = new URL('https://www.googleapis.com/youtube/v3/search')
-    url.searchParams.set('key', apiKey)
-    url.searchParams.set('channelId', channelId)
-    url.searchParams.set('q', tag)
-    url.searchParams.set('part', 'snippet')
-    url.searchParams.set('type', 'video')
-    url.searchParams.set('maxResults', '10')
-    url.searchParams.set('order', 'title')
-
-    try {
-      const res  = await fetch(url.toString())
-      const data = await res.json()
-      const videoIds = (data.items as YouTubeItem[])
-        ?.filter((item) => item.snippet.title.includes(tag))
-        .map((item) => item.id.videoId) ?? []
-      result[moduleId] = videoIds
-    } catch {
-      result[moduleId] = []
-    }
-  }
-
-  return NextResponse.json(result, {
+  return NextResponse.json(STATIC_VIDEO_MAP, {
     headers: {
-      'Cache-Control': 's-maxage=3600, stale-while-revalidate=86400',
+      'Cache-Control': 's-maxage=86400, stale-while-revalidate=604800',
     },
   })
 }
