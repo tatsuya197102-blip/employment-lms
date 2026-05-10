@@ -1,5 +1,4 @@
 'use client'
-// src/app/learn/module/[id]/page.tsx
 
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
@@ -25,7 +24,6 @@ export default function ModulePage() {
 
   const [progress, setProgress] = useState<ModuleProgress | null>(null)
   const [questions, setQuestions] = useState<QuizQuestion[]>([])
-  const [bookHtml, setBookHtml] = useState('')
   const [tab, setTab] = useState<Tab>('video')
   const [loading, setLoading] = useState(true)
   const [videoIdx, setVideoIdx] = useState(0)
@@ -36,12 +34,11 @@ export default function ModulePage() {
     if (!mod) { router.replace('/learn'); return }
     if (!user || !lmsUser) return
     const init = async () => {
-      const [p, qs, html] = await Promise.all([
+      const [p, qs] = await Promise.all([
         getModuleProgress(lmsUser.companyId, user.uid, id),
         fetchQuizQuestions(id),
-        fetch(`/api/book/${id}`).then(r => r.text()).catch(() => '<p>冊子を読み込めませんでした。</p>'),
       ])
-      setProgress(p); setQuestions(qs); setBookHtml(html); setLoading(false)
+      setProgress(p); setQuestions(qs); setLoading(false)
     }
     init()
   }, [id, mod, user, lmsUser, router])
@@ -151,8 +148,8 @@ export default function ModulePage() {
 
         {tab === 'book' && (
           <div className="space-y-4">
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm" style={{ height: '60vh' }}>
-              <BookViewer htmlContent={bookHtml} initialPercent={progress?.bookReadPercent ?? 0}
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden" style={{ height: '70vh' }}>
+              <BookViewer moduleId={id} initialPercent={progress?.bookReadPercent ?? 0}
                 onProgress={handleBookProgress} onCompleted={handleBookCompleted} />
             </div>
             <div className="flex justify-end">
