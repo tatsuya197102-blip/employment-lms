@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
@@ -18,7 +18,7 @@ type Tab = 'video' | 'book' | 'quiz'
 
 export default function ModulePage() {
   const { id } = useParams<{ id: string }>()
-  const { user, lmsUser, loading: authLoading } = useAuth()
+const { user, lmsUser, loading: authLoading } = useAuth()
   const router = useRouter()
   const mod = MODULES.find(m => m.id === id)
 
@@ -32,7 +32,7 @@ export default function ModulePage() {
 
   useEffect(() => {
     if (!mod) { router.replace('/learn'); return }
-    if (authLoading) return
+if (authLoading) return
     if (!user || !lmsUser) { setLoading(false); return }
     const init = async () => {
       const [p, qs] = await Promise.all([
@@ -42,7 +42,7 @@ export default function ModulePage() {
       setProgress(p); setQuestions(qs); setLoading(false)
     }
     init()
-  }, [id, mod, user, lmsUser, router])
+  }, [id, mod, user, lmsUser, router, authLoading])
 
   const handleVideoEnded = async () => {
     if (!user || !lmsUser) return
@@ -77,22 +77,22 @@ export default function ModulePage() {
   const prevMod = modIndex > 0 ? MODULES[modIndex - 1] : null
   const nextMod = modIndex < MODULES.length - 1 ? MODULES[modIndex + 1] : null
   const tabs: { key: Tab; label: string; done: boolean }[] = [
-    { key: 'video', label: '蜍慕判',   done: !!progress?.videoWatched },
-    { key: 'book',  label: '蜀雁ｭ・,   done: !!progress?.bookCompleted },
-    { key: 'quiz',  label: '繧ｯ繧､繧ｺ', done: !!progress?.passed },
+    { key: 'video', label: '動画',   done: !!progress?.videoWatched },
+    { key: 'book',  label: '冊子',   done: !!progress?.bookCompleted },
+    { key: 'quiz',  label: 'クイズ', done: !!progress?.passed },
   ]
 
   return (
     <div className="min-h-screen bg-[#F4F2EE]">
       <header className="bg-primary text-white">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-3">
-          <Link href="/learn" className="text-white/70 hover:text-white text-sm">竊・荳隕ｧ</Link>
+          <Link href="/learn" className="text-white/70 hover:text-white text-sm">← 一覧</Link>
           <span className="text-white/30">/</span>
           <div className="flex-1 min-w-0">
             <p className="text-xs text-white/50">{mod.id}</p>
             <p className="font-semibold text-sm truncate">{mod.title}</p>
           </div>
-          {progress?.passed && <span className="text-xs bg-green-400 text-white px-2.5 py-1 rounded-full font-semibold">笨・蜷域ｼ貂医∩</span>}
+          {progress?.passed && <span className="text-xs bg-green-400 text-white px-2.5 py-1 rounded-full font-semibold">✓ 合格済み</span>}
         </div>
       </header>
 
@@ -102,7 +102,7 @@ export default function ModulePage() {
             <button key={t.key} onClick={() => setTab(t.key)}
               className={`px-5 py-3 text-sm font-medium border-b-2 transition flex items-center gap-1
                 ${tab === t.key ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
-              {t.done && <span className="text-green-500 text-xs">笨・/span>}
+              {t.done && <span className="text-green-500 text-xs">✓</span>}
               {t.label}
             </button>
           ))}
@@ -114,14 +114,14 @@ export default function ModulePage() {
           <div className="space-y-4">
             {ytLoading ? (
               <div className="aspect-video bg-gray-100 rounded-xl flex items-center justify-center">
-                <p className="text-gray-400 text-sm">蜍慕判繧定ｪｭ縺ｿ霎ｼ縺ｿ荳ｭ...</p>
+                <p className="text-gray-400 text-sm">動画を読み込み中...</p>
               </div>
             ) : videoIds.length > 0 ? (
               <>
                 <YouTubePlayer videoId={videoIds[videoIdx]} onEnded={handleVideoEnded} />
                 {videoIds.length > 1 && (
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-gray-500">蜍慕判 {videoIdx + 1}/{videoIds.length}</span>
+                    <span className="text-xs text-gray-500">動画 {videoIdx + 1}/{videoIds.length}</span>
                     {videoIds.map((_, i) => (
                       <button key={i} onClick={() => setVideoIdx(i)}
                         className={`w-7 h-7 rounded-full text-xs font-medium transition
@@ -135,15 +135,15 @@ export default function ModulePage() {
             ) : (
               <div className="aspect-video bg-primary rounded-xl flex items-center justify-center">
                 <div className="text-center px-8">
-                  <p className="text-5xl mb-4">搭</p>
-                  <p className="text-white text-lg font-bold mb-2">縺薙・繝｢繧ｸ繝･繝ｼ繝ｫ縺ｯ蜀雁ｭ舌・繧ｯ繧､繧ｺ縺ｧ蟄ｦ鄙偵＠縺ｾ縺・/p>
-                  <p className="text-white/60 text-sm">蜍慕判繧ｳ繝ｳ繝・Φ繝・・縺ゅｊ縺ｾ縺帙ｓ縲ゆｸ九・縲悟・蟄舌ｒ隱ｭ繧縲阪・繧ｿ繝ｳ縺九ｉ蟄ｦ鄙偵ｒ騾ｲ繧√※縺上□縺輔＞縲・/p>
+                  <p className="text-5xl mb-4">📋</p>
+                  <p className="text-white text-lg font-bold mb-2">このモジュールは冊子・クイズで学習します</p>
+                  <p className="text-white/60 text-sm">動画コンテンツはありません。下の「冊子を読む」ボタンから学習を進めてください。</p>
                 </div>
               </div>
             )}
             <div className="flex items-center justify-between">
-              <button onClick={handleVideoEnded} className="text-sm text-gray-500 underline">隕冶・貂医∩縺ｫ縺吶ｋ</button>
-              <button onClick={() => setTab('book')} className="bg-primary text-white px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary/90">蜀雁ｭ舌ｒ隱ｭ繧 竊・/button>
+              <button onClick={handleVideoEnded} className="text-sm text-gray-500 underline">視聴済みにする</button>
+              <button onClick={() => setTab('book')} className="bg-primary text-white px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary/90">冊子を読む →</button>
             </div>
           </div>
         )}
@@ -155,7 +155,7 @@ export default function ModulePage() {
                 onProgress={handleBookProgress} onCompleted={handleBookCompleted} />
             </div>
             <div className="flex justify-end">
-              <button onClick={() => setTab('quiz')} className="bg-primary text-white px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary/90">繧ｯ繧､繧ｺ縺ｸ 竊・/button>
+              <button onClick={() => setTab('quiz')} className="bg-primary text-white px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary/90">クイズへ →</button>
             </div>
           </div>
         )}
@@ -164,21 +164,21 @@ export default function ModulePage() {
           <div className="space-y-4">
             {progress?.passed && (
               <div className="bg-green-50 border border-green-200 rounded-xl p-5 text-center">
-                <p className="text-lg font-bold text-green-700">笨・縺薙・繝｢繧ｸ繝･繝ｼ繝ｫ縺ｯ蜷域ｼ貂医∩縺ｧ縺・/p>
-                <p className="text-sm text-green-600 mt-1">蜀榊女鬨薙ｂ蜿ｯ閭ｽ縺ｧ縺・/p>
+                <p className="text-lg font-bold text-green-700">✓ このモジュールは合格済みです</p>
+                <p className="text-sm text-green-600 mt-1">再受験も可能です</p>
               </div>
             )}
             {questions.length > 0
               ? <QuizEngine questions={questions} onSubmit={handleQuizSubmit} onRetry={handleQuizRetry} />
-              : <p className="text-center text-gray-400 py-8">蝠城｡後ｒ隱ｭ縺ｿ霎ｼ繧薙〒縺・∪縺・..</p>}
+              : <p className="text-center text-gray-400 py-8">問題を読み込んでいます...</p>}
           </div>
         )}
 
         <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-200">
-          {prevMod ? <Link href={`/learn/module/${prevMod.id}`} className="text-sm text-gray-500 hover:text-primary">竊・{prevMod.title}</Link> : <div />}
+          {prevMod ? <Link href={`/learn/module/${prevMod.id}`} className="text-sm text-gray-500 hover:text-primary">← {prevMod.title}</Link> : <div />}
           {nextMod
-            ? <Link href={`/learn/module/${nextMod.id}`} className="bg-primary text-white text-sm px-4 py-2 rounded-lg hover:bg-primary/90">{nextMod.title} 竊・/Link>
-            : <Link href="/learn" className="bg-accent text-primary font-bold text-sm px-4 py-2 rounded-lg">荳隕ｧ縺ｫ謌ｻ繧・/Link>}
+            ? <Link href={`/learn/module/${nextMod.id}`} className="bg-primary text-white text-sm px-4 py-2 rounded-lg hover:bg-primary/90">{nextMod.title} →</Link>
+            : <Link href="/learn" className="bg-accent text-primary font-bold text-sm px-4 py-2 rounded-lg">一覧に戻る</Link>}
         </div>
       </main>
     </div>
