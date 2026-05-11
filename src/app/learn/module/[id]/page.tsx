@@ -18,7 +18,7 @@ type Tab = 'video' | 'book' | 'quiz'
 
 export default function ModulePage() {
   const { id } = useParams<{ id: string }>()
-  const { user, lmsUser } = useAuth()
+const { user, lmsUser, loading: authLoading } = useAuth()
   const router = useRouter()
   const mod = MODULES.find(m => m.id === id)
 
@@ -32,7 +32,8 @@ export default function ModulePage() {
 
   useEffect(() => {
     if (!mod) { router.replace('/learn'); return }
-    if (!user || !lmsUser) return
+if (authLoading) return
+    if (!user || !lmsUser) { setLoading(false); return }
     const init = async () => {
       const [p, qs] = await Promise.all([
         getModuleProgress(lmsUser.companyId, user.uid, id),
