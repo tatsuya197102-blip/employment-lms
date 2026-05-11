@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 
@@ -29,17 +29,17 @@ export default function BookViewer({
     const doc = iframe.contentDocument
     if (!doc) return
 
-    // 隧ｲ蠖鍋ｫ縺ｸ繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ
+    // 該当章へスクロール
     const anchor = CHAPTER_ANCHOR[moduleId]
     if (anchor) {
       const target = doc.getElementById(anchor) ||
         Array.from(doc.querySelectorAll('h1, h2')).find(h =>
-          (h.textContent || '').includes(`隨ｬ${moduleId.slice(1)}遶`)
+          (h.textContent || '').includes(`第${moduleId.slice(1)}章`)
         )
       if (target) target.scrollIntoView()
     }
 
-    // 蜿ｳ繧ｯ繝ｪ繝・け繝ｻ蜊ｰ蛻ｷ髦ｲ豁｢
+    // 右クリック・印刷防止
     doc.addEventListener('contextmenu', e => e.preventDefault())
     const style = doc.createElement('style')
     style.textContent = `
@@ -48,7 +48,7 @@ export default function BookViewer({
     `
     doc.head.appendChild(style)
 
-    // 繧ｹ繧ｯ繝ｭ繝ｼ繝ｫ騾ｲ謐苓ｿｽ霍｡
+    // スクロール進捗追跡
     const scrollWindow = iframe.contentWindow!
     const onScroll = () => {
       const scrolled = scrollWindow.scrollY
@@ -74,10 +74,11 @@ export default function BookViewer({
             style={{ width: `${percent}%` }}
           />
         </div>
-        <span className="text-xs text-gray-500 shrink-0">{percent}% 隱ｭ莠・/span>
+        <span className="text-xs text-gray-500 shrink-0">{percent}% 読了</span>
         {percent >= 80 && (
           <span className="text-xs font-medium text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
-            笨・隱ｭ莠・          </span>
+            ✓ 読了
+          </span>
         )}
       </div>
       <iframe
