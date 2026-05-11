@@ -12,12 +12,13 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner'
 type ProgressMap = Record<string, ModuleProgress | null>
 
 export default function LearnDashboard() {
-  const { user, lmsUser, signOut } = useAuth()
+  const { user, lmsUser, loading: authLoading, signOut } = useAuth()
   const [progressMap, setProgressMap] = useState<ProgressMap>({})
   const [loading, setLoading]         = useState(true)
 
   useEffect(() => {
-    if (!user || !lmsUser) return
+    if (authLoading) return
+    if (!user || !lmsUser) { setLoading(false); return }
     const fetchAll = async () => {
       const allProgress = await getAllModuleProgress(lmsUser.companyId, user.uid)
       // 譛ｪ蜿門ｾ励・繝｢繧ｸ繝･繝ｼ繝ｫ縺ｯnull縺ｧ陬懷ｮ・      const entries = MODULES.map(m => [m.id, allProgress[m.id] ?? null] as [string, ModuleProgress | null])
@@ -142,4 +143,5 @@ export default function LearnDashboard() {
     </div>
   )
 }
+
 
