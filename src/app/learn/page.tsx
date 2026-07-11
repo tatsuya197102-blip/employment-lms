@@ -14,6 +14,9 @@ type ProgressMap = Record<string, ModuleProgress | null>
 export default function LearnDashboard() {
   const { user, lmsUser, signOut } = useAuth()
   const visibleModules = MODULES.filter(m => !m.audience || m.audience === 'learner' || lmsUser?.role === 'admin')
+  const coreModules = visibleModules.filter(m => !m.audience || m.audience === 'learner')
+  const practiceModules = visibleModules.filter(m => m.audience === 'admin')
+  const practicePassed = practiceModules.filter(m => progressMap[m.id]?.passed).length
   const [progressMap, setProgressMap] = useState<ProgressMap>({})
   const [loading, setLoading]         = useState(true)
 
@@ -31,9 +34,9 @@ export default function LearnDashboard() {
 
   if (loading) return <LoadingSpinner />
 
-  const passedCount = visibleModules.filter(m => progressMap[m.id]?.passed).length
-  const allPassed   = passedCount === visibleModules.length
-  const overallPct  = Math.round((passedCount / visibleModules.length) * 100)
+  const passedCount = coreModules.filter(m => progressMap[m.id]?.passed).length
+  const allPassed   = passedCount === coreModules.length
+  const overallPct  = Math.round((passedCount / coreModules.length) * 100)
 
   const getStatus = (moduleId: string) => {
     const p = progressMap[moduleId]
@@ -83,7 +86,7 @@ export default function LearnDashboard() {
               <p className="text-sm text-gray-500">全体の進捗</p>
               <p className="text-3xl font-bold text-primary mt-1">{overallPct}%</p>
             </div>
-            <p className="text-sm text-gray-500">{passedCount} / {visibleModules.length} モジュール合格</p>
+            <p className="text-sm text-gray-500">{passedCount} / {coreModules.length} モジュール合格</p>
           </div>
           <div className="w-full bg-gray-100 rounded-full h-3">
             <div
@@ -93,14 +96,15 @@ export default function LearnDashboard() {
           </div>
           {allPassed && (
             <p className="text-center text-green-700 font-semibold mt-4">
-              🎉 おめでとうございます！全モジュールを修了しました。
+              🎉 おめでとうございます！必修編（全14モジュール）を修了しました。
             </p>
           )}
         </div>
 
-        {/* モジュール一覧 */}
+        {/* 必修編（M1〜M14） */}
+        <h2 className="text-base font-bold text-gray-700 mb-3">📘 必修編</h2>
         <div className="space-y-3">
-          {visibleModules.map((mod, idx) => {
+          {coreModules.map((mod, idx) => {
             const status = getStatus(mod.id)
             const p = progressMap[mod.id]
             const { label, bg, text } = statusLabel[status]
@@ -142,6 +146,40 @@ export default function LearnDashboard() {
             )
           })}
         </div>
+        {practiceModules.length > 0 && (
+          <>
+            <h2 className="text-base font-bold text-gray-700 mt-8 mb-1">📗 実践編（人事マネジメント）</h2>
+            <p className="text-xs text-gray-400 mb-3">冊子＋クイズで学ぶ実務コース（動画なし・修了証の対象外）｜ {practicePassed} / {practiceModules.length} 合格</p>
+            <div className="space-y-3">
+              {practiceModules.map((mod, idx) => {
+                const status = getStatus(mod.id)
+                const p = progressMap[mod.id]
+                const { label, bg, text } = statusLabel[status]
+                return (
+                  <Link key={mod.id} href={`/learn/module/${mod.id}`}
+                    className="block bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition p-4">
+                    <div className="flex items-center gap-4">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shrink-0
+                        ${status === 'passed' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-500'}`}>
+                        {status === 'passed' ? '✓' : idx + 15}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-sm text-gray-800 truncate">{mod.title}</p>
+                        <p className="text-xs text-gray-400 mt-0.5">{mod.bookChapter}</p>
+                        {p && p.bookReadPercent > 0 && (
+                          <div className="mt-1.5 w-full bg-gray-100 rounded-full h-1.5">
+                            <div className="bg-accent h-1.5 rounded-full" style={{ width: `${p.bookReadPercent}%` }} />
+                          </div>
+                        )}
+                      </div>
+                      <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${bg} ${text}`}>{label}</span>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          </>
+        )}
       </main>
     </div>
   )

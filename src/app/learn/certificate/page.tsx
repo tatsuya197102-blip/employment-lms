@@ -18,7 +18,7 @@ export default function CertificatePage() {
     if (!user || !lmsUser) return
     const check = async () => {
       const progresses = await Promise.all(
-        MODULES.map(m => getModuleProgress(lmsUser.companyId, user.uid, m.id))
+        MODULES.filter(m => !m.audience || m.audience === 'learner').map(m => getModuleProgress(lmsUser.companyId, user.uid, m.id))
       )
       const passed = progresses.every(p => p?.passed)
       setAllPassed(passed)
