@@ -13,6 +13,7 @@ type ProgressMap = Record<string, ModuleProgress | null>
 
 export default function LearnDashboard() {
   const { user, lmsUser, signOut } = useAuth()
+  const visibleModules = MODULES.filter(m => !m.audience || m.audience === 'learner' || lmsUser?.role === 'admin')
   const [progressMap, setProgressMap] = useState<ProgressMap>({})
   const [loading, setLoading]         = useState(true)
 
@@ -21,7 +22,7 @@ export default function LearnDashboard() {
     const fetchAll = async () => {
       const allProgress = await getAllModuleProgress(lmsUser.companyId, user.uid)
       // 未取得のモジュールはnullで補完
-      const entries = MODULES.map(m => [m.id, allProgress[m.id] ?? null] as [string, ModuleProgress | null])
+      const entries = visibleModules.map(m => [m.id, allProgress[m.id] ?? null] as [string, ModuleProgress | null])
       setProgressMap(Object.fromEntries(entries))
       setLoading(false)
     }
@@ -30,9 +31,9 @@ export default function LearnDashboard() {
 
   if (loading) return <LoadingSpinner />
 
-  const passedCount = MODULES.filter(m => progressMap[m.id]?.passed).length
-  const allPassed   = passedCount === MODULES.length
-  const overallPct  = Math.round((passedCount / MODULES.length) * 100)
+  const passedCount = visibleModules.filter(m => progressMap[m.id]?.passed).length
+  const allPassed   = passedCount === visibleModules.length
+  const overallPct  = Math.round((passedCount / visibleModules.length) * 100)
 
   const getStatus = (moduleId: string) => {
     const p = progressMap[moduleId]
@@ -82,7 +83,7 @@ export default function LearnDashboard() {
               <p className="text-sm text-gray-500">全体の進捗</p>
               <p className="text-3xl font-bold text-primary mt-1">{overallPct}%</p>
             </div>
-            <p className="text-sm text-gray-500">{passedCount} / {MODULES.length} モジュール合格</p>
+            <p className="text-sm text-gray-500">{passedCount} / {visibleModules.length} モジュール合格</p>
           </div>
           <div className="w-full bg-gray-100 rounded-full h-3">
             <div
@@ -99,7 +100,7 @@ export default function LearnDashboard() {
 
         {/* モジュール一覧 */}
         <div className="space-y-3">
-          {MODULES.map((mod, idx) => {
+          {visibleModules.map((mod, idx) => {
             const status = getStatus(mod.id)
             const p = progressMap[mod.id]
             const { label, bg, text } = statusLabel[status]

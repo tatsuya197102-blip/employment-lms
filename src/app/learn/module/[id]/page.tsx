@@ -21,6 +21,8 @@ export default function ModulePage() {
 const { user, lmsUser, loading: authLoading } = useAuth()
   const router = useRouter()
   const mod = MODULES.find(m => m.id === id)
+  const accessDenied = mod?.audience === 'admin' && lmsUser?.role !== 'admin'
+  useEffect(() => { if (accessDenied) router.replace('/learn') }, [accessDenied, router])
 
   const [progress, setProgress] = useState<ModuleProgress | null>(null)
   const [questions, setQuestions] = useState<QuizQuestion[]>([])
@@ -85,7 +87,7 @@ if (authLoading) return
   return (
     <div className="min-h-screen bg-[#F4F2EE]">
       <header className="bg-primary text-white">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-3">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
           <Link href="/learn" className="text-white/70 hover:text-white text-sm">← 一覧</Link>
           <span className="text-white/30">/</span>
           <div className="flex-1 min-w-0">
@@ -97,7 +99,7 @@ if (authLoading) return
       </header>
 
       <div className="bg-white border-b border-gray-100 sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 flex">
+        <div className="max-w-6xl mx-auto px-4 flex">
           {tabs.map(t => (
             <button key={t.key} onClick={() => setTab(t.key)}
               className={`px-5 py-3 text-sm font-medium border-b-2 transition flex items-center gap-1
@@ -109,7 +111,7 @@ if (authLoading) return
         </div>
       </div>
 
-      <main className="max-w-4xl mx-auto px-4 py-6">
+      <main className="max-w-6xl mx-auto px-4 py-6">
         {tab === 'video' && (
           <div className="space-y-4">
             {ytLoading ? (

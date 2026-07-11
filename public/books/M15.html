@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M15 受け入れ準備と初期定着（入社前後30日）| 外国人雇用LMS</title>
+<style>
+  :root{
+    --navy:#1e3a5f;
+    --navy-deep:#16304e;
+    --accent:#2563a8;
+    --point-bg:#eaf2fb;
+    --point-border:#2563a8;
+    --warn-bg:#fdf3e7;
+    --warn-border:#d97b2b;
+    --update-bg:#f4f7f4;
+    --update-border:#3a7d44;
+    --text:#2b3440;
+    --muted:#6b7684;
+    --line:#dde3ea;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  .page{
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+    color:var(--text);
+    line-height:1.9;
+    background:#fff;
+    font-size:15px;
+  }
+  .page{
+    max-width:52em;
+    margin:0 auto;
+    padding:2.5em 2em 4em;
+  }
+  /* 章扉 */
+  .chapter-cover{
+    background:var(--navy);
+    color:#fff;
+    padding:2.2em 2em;
+    margin:3em 0 0;
+    border-radius:4px 4px 0 0;
+  }
+  .chapter-cover .eyebrow{
+    font-size:.8em;
+    letter-spacing:.2em;
+    opacity:.85;
+    margin-bottom:.4em;
+  }
+  .chapter-cover h2{
+    font-size:1.5em;
+    font-weight:700;
+    line-height:1.5;
+  }
+  .chapter-.page{
+    border:1px solid var(--line);
+    border-top:none;
+    border-radius:0 0 4px 4px;
+    padding:2em;
+    margin-bottom:1em;
+  }
+  h3{
+    color:var(--navy);
+    font-size:1.15em;
+    border-bottom:2px solid var(--navy);
+    padding-bottom:.4em;
+    margin:2em 0 1em;
+  }
+  h3:first-child{margin-top:0;}
+  h4{
+    color:var(--accent);
+    font-size:1em;
+    margin:1.6em 0 .6em;
+  }
+  p{margin:.8em 0;}
+  ul,ol{margin:.8em 0 .8em 1.6em;}
+  li{margin:.35em 0;}
+  /* POINTボックス（既存冊子と同形式） */
+  .point{
+    background:var(--point-bg);
+    border-left:4px solid var(--point-border);
+    padding:1em 1.2em;
+    margin:1.4em 0;
+    border-radius:0 4px 4px 0;
+  }
+  .point .tag{
+    display:inline-block;
+    background:#fff;
+    color:var(--point-border);
+    font-weight:700;
+    font-size:.78em;
+    letter-spacing:.12em;
+    padding:.15em .6em;
+    border:1px solid var(--point-border);
+    border-radius:3px;
+    margin-right:.6em;
+  }
+  /* 注意ボックス */
+  .caution{
+    background:var(--warn-bg);
+    border-left:4px solid var(--warn-border);
+    padding:1em 1.2em;
+    margin:1.4em 0;
+    border-radius:0 4px 4px 0;
+  }
+  .caution .tag{
+    display:inline-block;
+    background:#fff;
+    color:var(--warn-border);
+    font-weight:700;
+    font-size:.78em;
+    letter-spacing:.12em;
+    padding:.15em .6em;
+    border:1px solid var(--warn-border);
+    border-radius:3px;
+    margin-right:.6em;
+  }
+  /* 最新情報章（法改正で動く情報の集約先） */
+  .update-section{
+    background:var(--update-bg);
+    border:2px solid var(--update-border);
+    border-radius:4px;
+    padding:2em;
+    margin:3em 0 1em;
+  }
+  .update-section h2{
+    color:var(--update-border);
+    font-size:1.3em;
+    margin-bottom:.3em;
+  }
+  .update-section .asof{
+    font-size:.85em;
+    color:var(--muted);
+    margin-bottom:1.2em;
+  }
+  /* 表 */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin:1.2em 0;
+    font-size:.95em;
+  }
+  th{
+    background:var(--navy);
+    color:#fff;
+    padding:.6em .8em;
+    text-align:left;
+    font-weight:600;
+  }
+  td{
+    border:1px solid var(--line);
+    padding:.6em .8em;
+    vertical-align:top;
+  }
+  tr:nth-child(even) td{background:#f7f9fb;}
+  /* チェックリスト */
+  .checklist li{
+    list-style:none;
+    position:relative;
+    padding-left:1.8em;
+    margin:.5em 0;
+  }
+  .checklist li::before{
+    content:"☐";
+    position:absolute;
+    left:0;
+    color:var(--accent);
+    font-size:1.1em;
+  }
+  /* 巻末参照リンク風表記 */
+  .ref{
+    color:var(--update-border);
+    font-weight:600;
+    white-space:nowrap;
+  }
+  /* 奥付 */
+  .colophon{
+    margin-top:3em;
+    padding:1.6em 2em;
+    border-top:3px double var(--navy);
+    font-size:.85em;
+    color:var(--muted);
+  }
+  .colophon strong{color:var(--text);}
+  /* 表紙 */
+  .cover{
+    background:linear-gradient(160deg,var(--navy) 0%,var(--navy-deep) 100%);
+    color:#fff;
+    padding:4em 2.5em;
+    border-radius:4px;
+    margin-bottom:1em;
+  }
+  .cover .series{
+    font-size:.85em;
+    letter-spacing:.25em;
+    opacity:.8;
+    margin-bottom:1.4em;
+  }
+  .cover .module-id{
+    display:inline-block;
+    border:1px solid rgba(255,255,255,.5);
+    padding:.2em .9em;
+    border-radius:3px;
+    font-size:.9em;
+    letter-spacing:.15em;
+    margin-bottom:1em;
+  }
+  .cover h1{
+    font-size:1.9em;
+    line-height:1.5;
+    font-weight:700;
+    margin-bottom:.8em;
+  }
+  .cover .audience{
+    font-size:.95em;
+    opacity:.9;
+  }
+  @media (max-width:640px){
+    .page{padding:1.2em 1em 3em;}
+    .chapter-.page{padding:1.2em;}
+    .cover{padding:2.5em 1.5em;}
+  }
+  @media print{
+    .page{font-size:11pt;}
+    .chapter-cover{break-before:page;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ========== 表紙 ========== -->
+<div class="cover">
+  <div class="series">外国人雇用LMS｜人事・管理者向けコース</div>
+  <div class="module-id">MODULE 15</div>
+  <h1>受け入れ準備と初期定着<br>— 入社前後30日 —</h1>
+  <div class="audience">対象：人事担当者・受け入れ部門の管理者</div>
+</div>
+
+<!-- ========== 第1章 ========== -->
+<div class="chapter-cover">
+  <div class="eyebrow">第 1 章</div>
+  <h2>なぜ「最初の30日」で定着が決まるのか</h2>
+</div>
+<div class="chapter-body">
+  <h3>1-1. 早期離職の分岐点は入社直後にある</h3>
+  <p>外国人材の離職は、入社から半年以内、なかでも最初の1ヶ月に原因が作られるケースが目立ちます。仕事内容そのものへの不満よりも、「聞いていた条件と違う」「困ったときに誰に相談すればいいか分からない」「生活が立ち上がらない」という、<strong>受け入れ側の準備不足に起因する不安の蓄積</strong>が引き金になります。</p>
+  <p>逆に言えば、最初の30日を計画的に設計するだけで、その後の定着率は大きく変わります。本モジュールでは、入社前・初日〜1週間・1ヶ月目の3つの期間に分けて、実務のチェックポイントを整理します。</p>
+
+  <div class="point"><span class="tag">POINT</span>定着支援は「入社後に始める」ものではなく、「入社前に仕込む」もの。内定から入社日までの期間こそが、最初の勝負どころです。</div>
+
+  <h3>1-2. 日本人の新入社員との違いを押さえる</h3>
+  <p>外国人材の受け入れでは、日本人の新入社員では発生しない準備項目が加わります。大きくは次の3系統です。</p>
+  <table>
+    <tr><th>系統</th><th>内容</th><th>担当の目安</th></tr>
+    <tr><td>法務系</td><td>在留資格の確認、雇用契約の母国語対応、行政への届出</td><td>人事（詳細はM20・M21）</td></tr>
+    <tr><td>生活系</td><td>住居、銀行口座、携帯電話、住民登録</td><td>人事＋受け入れ部門（詳細はM17）</td></tr>
+    <tr><td>職場系</td><td>教育担当者の指名、やさしい日本語の準備、既存社員への周知</td><td>受け入れ部門</td></tr>
+  </table>
+  <p>本モジュールは全体の流れと「職場系」を中心に扱い、法務系はM20・M21、生活系の詳細はM17で深掘りします。</p>
+</div>
+
+<!-- ========== 第2章 ========== -->
+<div class="chapter-cover">
+  <div class="eyebrow">第 2 章</div>
+  <h2>入社前の準備 — 内定から入社日まで</h2>
+</div>
+<div class="chapter-body">
+  <h3>2-1. 入社前チェックリスト</h3>
+  <ul class="checklist">
+    <li>在留カードの原本確認（資格の種類・就労制限・在留期限）→ 詳細はM20</li>
+    <li>雇用契約書・労働条件通知書を本人が理解できる言語で用意 → 詳細はM21</li>
+    <li>住居の確保（社宅・借り上げ・本人契約の別と、契約時の連帯保証の扱い）</li>
+    <li>教育担当者（メンター）を1名指名し、役割を本人に説明しておく</li>
+    <li>受け入れ部門の既存社員に、入社日・氏名の読み方・出身国・使用言語を周知</li>
+    <li>初日のスケジュール表を作り、事前に本人へ送付（可能なら母国語併記）</li>
+    <li>制服・safety装備・ロッカー・PCアカウント等の物品準備</li>
+    <li>緊急連絡網に本人を追加し、本人にも会社側の緊急連絡先を渡す</li>
+  </ul>
+
+  <div class="point"><span class="tag">POINT</span>「初日のスケジュール表を事前に送る」は費用ゼロで効果の大きい施策です。初日に何が起きるか分からない状態は、来日直後の本人にとって想像以上の不安要因になります。</div>
+
+  <h3>2-2. 教育担当者（メンター）の指名</h3>
+  <p>教育担当者は「業務を教える人」と「生活・人間関係の相談相手」の2役を担います。選ぶ際の基準は次の通りです。</p>
+  <ul>
+    <li>本人と同じ部署で、日常的に顔を合わせる位置にいること</li>
+    <li>短い文で話す・言い換えるなど、やさしい日本語の意識を持てること（詳細はM16）</li>
+    <li>メンター業務が本来業務に上乗せになることを踏まえ、<strong>評価や手当で報いる仕組み</strong>を用意すること</li>
+  </ul>
+  <div class="caution"><span class="tag">注意</span>メンターを「同じ国籍の先輩社員」だけに固定すると、通訳役の負担が一人に集中して先輩側が離職するという二次被害が起きがちです。日本人メンター＋同郷の相談相手、のように役割を分けてください。</div>
+</div>
+
+<!-- ========== 第3章 ========== -->
+<div class="chapter-cover">
+  <div class="eyebrow">第 3 章</div>
+  <h2>初日から1週間 — 不安を潰す設計</h2>
+</div>
+<div class="chapter-body">
+  <h3>3-1. 初日にやること・やらないこと</h3>
+  <p>初日の目的は「安心して2日目に来られる状態を作る」ことに絞ります。詰め込みは逆効果です。</p>
+  <table>
+    <tr><th>やること</th><th>やらないこと</th></tr>
+    <tr><td>職場案内、メンバー紹介、メンターの顔合わせ</td><td>就業規則の全文読み合わせ</td></tr>
+    <tr><td>トイレ・休憩室・食事場所・喫煙所の案内</td><td>初日からの実作業ノルマ</td></tr>
+    <tr><td>困ったときに誰に聞くかを紙で渡す（写真＋名前＋連絡方法）</td><td>歓迎会の即日開催（本人の希望を聞いてから）</td></tr>
+  </table>
+
+  <h3>3-2. 1週間の設計</h3>
+  <ul>
+    <li><strong>毎日10分の振り返り</strong>：メンターが「今日分からなかったこと」を1つ聞く。「分かりましたか？」ではなく「どこが難しかったですか？」と聞く（詳細はM16）。</li>
+    <li><strong>業務は「見る→一緒にやる→一人でやる」の3段階</strong>で進め、段階を飛ばさない。</li>
+    <li><strong>生活面の残タスク</strong>（銀行口座・住民登録など）は初週の業務時間内に片付ける時間を確保する。役所や銀行は平日日中しか開いていないため、業務外で済ませろというのは事実上不可能です（詳細はM17）。</li>
+  </ul>
+
+  <div class="point"><span class="tag">POINT</span>「分かりましたか？」に対する「はい」は、理解の確認になりません。多くの文化圏で、目上の人への「いいえ」は失礼とされるためです。理解確認は「やってみせてもらう」か「どこが難しいか」を聞く形に変えましょう。</div>
+</div>
+
+<!-- ========== 第4章 ========== -->
+<div class="chapter-cover">
+  <div class="eyebrow">第 4 章</div>
+  <h2>1ヶ月目 — 定着の土台を固める</h2>
+</div>
+<div class="chapter-body">
+  <h3>4-1. 30日面談</h3>
+  <p>入社30日前後で、メンターとは別の立場の人（人事または上長）が面談を行います。目的は評価ではなく<strong>不安・不満の早期発見</strong>です。聞く項目の例：</p>
+  <ul>
+    <li>仕事の内容は、入社前に聞いていた説明と同じですか（ギャップの確認）</li>
+    <li>給与明細の内容は理解できましたか（控除項目の説明はM22）</li>
+    <li>住まい・食事・通勤で困っていることはありますか</li>
+    <li>職場で話しかけづらい・聞きづらいと感じる場面はありますか</li>
+  </ul>
+
+  <h3>4-2. 1ヶ月目のよくあるつまずきと対処</h3>
+  <table>
+    <tr><th>つまずき</th><th>背景</th><th>対処</th></tr>
+    <tr><td>給与明細を見て「聞いていた額と違う」と不信感を持つ</td><td>社会保険料・税の控除が事前に説明されていない</td><td>内定時と初回給与時の2回、控除の内訳を母国語資料で説明（M22参照）</td></tr>
+    <tr><td>質問をしなくなる</td><td>初週に「そんなことも分からないのか」という反応を受けた</td><td>メンター以外の匿名相談ルートを用意（M19参照）</td></tr>
+    <tr><td>同郷コミュニティ経由で他社の条件を知り動揺する</td><td>待遇の相場感が本人に無い</td><td>昇給・評価の道筋を早期に示す（M18参照）</td></tr>
+  </table>
+
+  <div class="caution"><span class="tag">注意</span>30日面談を「問題がなければ実施しない」運用にすると、問題が表面化した時点では手遅れになっています。全員に必ず実施する定例行事にしてください。</div>
+
+  <h3>4-3. 30日終了時の到達目標</h3>
+  <ul class="checklist">
+    <li>本人が「困ったときに誰に聞くか」を3人以上言える</li>
+    <li>生活インフラ（住居・口座・携帯・住民登録）が全て完了している</li>
+    <li>担当業務の1つを「一人でやる」段階まで進めている</li>
+    <li>30日面談を実施し、記録を残している</li>
+    <li>次の3ヶ月の育成計画を本人と共有している</li>
+  </ul>
+</div>
+
+<!-- ========== 巻末：最新情報 ========== -->
+<div class="update-section">
+  <h2>巻末：最新情報</h2>
+  <div class="asof">この章の情報は <strong>2026年7月時点</strong> のものです。制度・金額は改正されることがあります。実務での判断前に必ず最新の公的情報をご確認ください。</div>
+
+  <h4>本文から参照される「動く情報」はこの章に集約しています</h4>
+  <p>本冊子（M15）は制度金額への依存が少ないモジュールですが、以下は改正の影響を受けます。</p>
+  <table>
+    <tr><th>項目</th><th>現況（2026年7月時点）</th><th>確認先</th></tr>
+    <tr><td>外国人雇用状況の届出</td><td>雇入れ・離職時にハローワークへ届出（義務）。手続き詳細はM20巻末を参照。</td><td>厚生労働省</td></tr>
+    <tr><td>育成就労制度</td><td>技能実習からの移行が進行中。受け入れ準備への影響はM23巻末を参照。</td><td>出入国在留管理庁</td></tr>
+    <tr><td>住民登録・マイナンバー</td><td>入国後の手続きの最新の流れはM17巻末を参照。</td><td>各市区町村</td></tr>
+  </table>
+  <p style="font-size:.9em;color:var(--muted);">※ 年次更新時は、この章と奥付の日付のみを改訂します。本文は原則変更しません。</p>
+</div>
+
+<!-- ========== 奥付 ========== -->
+<div class="colophon">
+  <p><strong>外国人雇用LMS 人事・管理者向けコース　M15 受け入れ準備と初期定着</strong></p>
+  <p>本冊子の情報は <strong>2026年7月時点</strong> のものです。</p>
+  <p>本教材は一般的な情報提供を目的としたものであり、法的助言ではありません。個別の事案に関する判断は、社会保険労務士・行政書士・弁護士等の専門家にご相談ください。</p>
+  <p>発行：株式会社J-MANGA CREATE</p>
+</div>
+
+</div>
+</body>
+</html>

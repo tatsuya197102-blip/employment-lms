@@ -70,6 +70,11 @@ export async function GET(
   { params }: { params: { moduleId: string } }
 ) {
   const { moduleId } = params
+  // M15-M24: public/books/{id}.html があれば直接配信
+  const direct = join(process.cwd(), 'public', 'books', moduleId + '.html')
+  if (existsSync(direct)) {
+    return new NextResponse(readFileSync(direct, 'utf-8'), { headers: { 'Content-Type': 'text/html;charset=utf-8' } })
+  }
   const kws = CHAPTER_KEYWORDS[moduleId]
   if (!kws) return new NextResponse('<p>モジュールが見つかりません。</p>',{headers:{'Content-Type':'text/html;charset=utf-8'}})
 

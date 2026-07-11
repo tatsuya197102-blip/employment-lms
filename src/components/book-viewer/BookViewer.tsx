@@ -83,7 +83,7 @@ export default function BookViewer({
       </div>
       <iframe
         ref={iframeRef}
-        src="/manual.html?v=2"
+        src={Number(moduleId.slice(1)) >= 15 ? `/books/${moduleId}.html` : '/manual.html?v=2'}
         onLoad={handleLoad}
         className="flex-1 w-full border-0"
         sandbox="allow-same-origin allow-scripts"
