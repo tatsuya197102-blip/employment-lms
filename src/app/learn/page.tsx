@@ -16,8 +16,8 @@ export default function LearnDashboard() {
   const visibleModules = MODULES.filter(m => !m.audience || m.audience === 'learner' || lmsUser?.role === 'admin')
   const coreModules = visibleModules.filter(m => !m.audience || m.audience === 'learner')
   const practiceModules = visibleModules.filter(m => m.audience === 'admin')
-  const practicePassed = practiceModules.filter(m => progressMap[m.id]?.passed).length
   const [progressMap, setProgressMap] = useState<ProgressMap>({})
+  const practicePassed = practiceModules.filter(m => progressMap[m.id]?.passed).length
   const [loading, setLoading]         = useState(true)
 
   useEffect(() => {
