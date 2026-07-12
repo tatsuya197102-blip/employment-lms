@@ -1,4 +1,5 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
+import SiteFooter from '@/components/SiteFooter'
 
 export default function HomePage() {
   return (
@@ -98,13 +99,7 @@ export default function HomePage() {
         </div>
       </main>
 
-      {/* フッター */}
-      <footer className="border-t border-white/10 mt-20">
-        <div className="max-w-6xl mx-auto px-6 py-8 flex items-center justify-between text-xs text-white/40">
-          <p>© 株式会社 J-MANGA CREATE</p>
-          <p>外国人雇用LMS v1.0</p>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }
