@@ -1,4 +1,4 @@
-﻿import Link from 'next/link'
+import Link from 'next/link'
 import SiteFooter from '@/components/SiteFooter'
 
 export default function HomePage() {
@@ -24,6 +24,10 @@ export default function HomePage() {
       <main className="max-w-6xl mx-auto px-6 py-20">
         <div className="text-center mb-16">
           <p className="text-sm font-medium text-accent mb-4 tracking-widest">FOREIGN EMPLOYMENT LEARNING SYSTEM</p>
+          <div className="inline-flex items-center gap-2 bg-white/10 border border-accent/60 rounded-full px-4 py-1.5 mb-6">
+            <span className="w-2 h-2 rounded-full bg-accent"></span>
+            <span className="text-sm font-semibold">育成就労制度(2027年4月施行)対応済み</span>
+          </div>
           <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
             外国人雇用を、<br />
             <span className="text-accent">確実な実務</span>に。
@@ -46,12 +50,12 @@ export default function HomePage() {
         <div className="grid md:grid-cols-3 gap-6 mb-20">
           {[
             {
-              n: '14',
+              n: '24',
               title: 'モジュール構成',
-              desc: '在留資格・採用・労務管理・トラブル対応まで実務全領域をカバー',
+              desc: '在留資格・採用・労務管理から育成就労制度・定着支援まで実務全領域をカバー',
             },
             {
-              n: '210',
+              n: '360',
               title: 'クイズ問題',
               desc: '4択問題のランダム出題と即時フィードバックで知識を定着',
             },
