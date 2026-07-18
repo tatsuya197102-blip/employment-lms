@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <LegalPageLayout title="利用規約" updatedAt="2026年7月12日">
+    <LegalPageLayout title="利用規約" updatedAt="2027年4月1日">
       <p>
         この利用規約(以下「本規約」といいます)は、株式会社J-MANGA
         CREATE(以下「当社」といいます)が提供する外国人雇用研修eラーニングサービス「外国人雇用LMS」(以下「本サービス」といいます)の利用条件を定めるものです。契約企業および受講者(以下あわせて「利用者」といいます)は、本規約に同意のうえ本サービスを利用するものとします。

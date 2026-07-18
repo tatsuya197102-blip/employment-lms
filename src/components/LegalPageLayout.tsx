@@ -37,7 +37,7 @@ export default function LegalPageLayout({
           {children}
         </article>
         {updatedAt && (
-          <p className="mt-12 text-sm text-gray-500 text-right">最終改定日:{updatedAt}</p>
+          <p className="mt-12 text-sm text-gray-500 text-right">サービス開始予定日:{updatedAt}</p>
         )}
       </main>
     </div>

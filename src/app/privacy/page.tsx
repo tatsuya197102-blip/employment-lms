@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <LegalPageLayout title="プライバシーポリシー" updatedAt="2026年7月12日">
+    <LegalPageLayout title="プライバシーポリシー" updatedAt="2027年4月1日">
       <p>
         株式会社J-MANGA
         CREATE(以下「当社」といいます)は、外国人雇用研修eラーニングサービス「外国人雇用LMS」(以下「本サービス」といいます)における利用者の個人情報を、個人情報の保護に関する法律その他の関係法令を遵守し、以下のとおり取り扱います。

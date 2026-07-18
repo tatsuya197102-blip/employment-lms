@@ -302,23 +302,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* クロスセル */}
-      <section className="max-w-6xl mx-auto px-6 pb-20">
-        <div className="bg-white rounded-xl border border-[#1A3E6E]/10 p-8 text-center shadow-sm">
-          <p className="text-sm text-[#1A2433]/70 mb-3">
-            受け入れる外国人材ご本人の学習(特定技能16分野・JLPT対策・13言語)は
-          </p>
-          <a
-            href={GWL_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block font-bold text-[#1A3E6E] underline underline-offset-4 decoration-[#C8A84B] decoration-2 hover:opacity-80"
-          >
-            Global Workforce Learn へ →
-          </a>
-        </div>
-      </section>
-
       <SiteFooter />
     </div>
   )
