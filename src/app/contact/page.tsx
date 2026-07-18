@@ -8,6 +8,7 @@ import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 
 const TYPES = [
   { id: 'estimate', label: 'お見積り' },
+  { id: 'demo', label: 'デモアカウント希望' },
   { id: 'document', label: '資料請求' },
   { id: 'general', label: 'その他のお問い合わせ' },
 ] as const
@@ -166,14 +167,14 @@ function ContactForm() {
       </div>
 
       <label htmlFor="message" className="block text-sm font-semibold text-[#1A3E6E] mb-2">
-        ご相談内容{type === 'document' ? '(任意)' : ''}
+        ご相談内容{type === 'document' || type === 'demo' ? '(任意)' : ''}
       </label>
       <textarea
         id="message"
         name="message"
         className={`${inputCls} min-h-32 mb-6`}
         placeholder={
-          type === 'document'
+          type === 'document' || type === 'demo'
             ? 'ご質問などあればご記入ください'
             : '受講予定人数、導入時期、ご質問などをご記入ください'
         }

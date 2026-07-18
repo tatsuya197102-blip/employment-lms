@@ -203,8 +203,67 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 料金 */}
+      {/* 画面イメージ */}
       <section className="max-w-6xl mx-auto px-6 py-20">
+        <h2 className="text-center text-2xl font-bold text-[#1A3E6E] mb-2">画面イメージ</h2>
+        <p className="text-center text-sm text-[#1A2433]/60 mb-10">
+          受講者・管理者それぞれの実際の画面をご覧ください。
+        </p>
+        <div className="grid md:grid-cols-3 gap-5 mb-8">
+          {[
+            {
+              src: '/screenshots/learn.png',
+              alt: '受講者ダッシュボード',
+              title: '受講者ダッシュボード',
+              desc: '進捗・合格状況がひと目で分かり、「続きから学習」ですぐ再開できます。',
+            },
+            {
+              src: '/screenshots/module.png',
+              alt: '学習画面(冊子・クイズ)',
+              title: '学習画面',
+              desc: '図解豊富な冊子と確認クイズ。読了率は自動で記録されます。',
+            },
+            {
+              src: '/screenshots/admin.png',
+              alt: '管理者ダッシュボード',
+              title: '管理者ダッシュボード',
+              desc: '全受講者の進捗・修了状況を一括管理。アカウントはCSVで一括発行。',
+            },
+          ].map((s) => (
+            <figure
+              key={s.src}
+              className="bg-white rounded-xl border border-[#1A3E6E]/10 shadow-sm overflow-hidden"
+            >
+              <div className="bg-[#E8EBEF] px-3 py-2 flex gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#C8A84B]/60"></span>
+                <span className="w-2.5 h-2.5 rounded-full bg-[#1A3E6E]/30"></span>
+                <span className="w-2.5 h-2.5 rounded-full bg-[#1A3E6E]/15"></span>
+              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={s.src} alt={s.alt} className="w-full aspect-[4/3] object-cover object-top" />
+              <figcaption className="p-4">
+                <p className="font-bold text-sm text-[#1A3E6E]">{s.title}</p>
+                <p className="text-xs text-[#1A2433]/60 mt-1 leading-relaxed">{s.desc}</p>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+        <div className="bg-[#132B4D] text-white rounded-xl p-7 text-center">
+          <p className="font-bold mb-1.5">実際に操作してみたい方へ</p>
+          <p className="text-sm text-white/70 mb-5">
+            デモアカウントを無料で発行します。導入前に受講者・管理者の両画面をお試しいただけます。
+          </p>
+          <Link
+            href="/contact?type=demo"
+            className="inline-block bg-[#C8A84B] text-[#132B4D] font-bold px-8 py-3 rounded-lg hover:opacity-90 transition"
+          >
+            デモアカウントを申し込む(無料)
+          </Link>
+        </div>
+      </section>
+
+      {/* 料金 */}
+      <section className="max-w-6xl mx-auto px-6 py-20 pt-0">
         <h2 className="text-center text-2xl font-bold text-[#1A3E6E] mb-10">料金</h2>
         <div className="max-w-xl mx-auto bg-white rounded-2xl border-2 border-[#1A3E6E] shadow-lg overflow-hidden">
           <div className="bg-[#1A3E6E] text-white text-center py-3 text-sm font-semibold tracking-wider">
