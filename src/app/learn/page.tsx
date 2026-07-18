@@ -235,7 +235,7 @@ export default function LearnDashboard() {
 
         {practiceModules.length > 0 && (
           <>
-            <h2 className="text-base font-bold text-gray-700 mt-8 mb-1">📗 実践編(人事マネジメント)</h2>
+            <h2 className="text-base font-bold text-gray-700 mt-8 mb-1">📗 実践編(定着支援・法務労務)</h2>
             <p className="text-xs text-gray-400 mb-3">
               冊子+クイズで学ぶ実務コース(動画なし・修了証の対象外)| {practicePassed} /{' '}
               {practiceModules.length} 合格

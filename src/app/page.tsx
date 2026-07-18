@@ -13,7 +13,7 @@ const PRICING = {
   unit: '円 / 年(税別)・1社あたり',
   features: [
     '受講者向け 必修編14モジュール',
-    '人事・管理者向け 実践編10モジュール(定着支援・法務労務)',
+    '実践編10モジュール(定着支援・法務労務)',
     '確認クイズ360問・修了証発行',
     '管理者ダッシュボード(進捗・修了状況の一括管理)',
     '受講アカウント発行数 無制限',
@@ -63,7 +63,7 @@ export default function HomePage() {
         <p className="text-base md:text-lg text-[#1A2433]/70 max-w-2xl mx-auto leading-relaxed mb-6">
           在留資格・採用・労務管理から育成就労制度・定着支援まで。
           <br className="hidden md:block" />
-          動画・冊子・修了試験で、人事担当者と現場管理職の実務知識を体系的に育てます。
+          動画・冊子・修了試験で、人事担当者と受け入れ現場管理職の実務知識を体系的に育てます。
         </p>
         <div className="inline-flex items-center gap-2 bg-white border border-[#C8A84B]/60 rounded-full px-4 py-1.5 mb-10 shadow-sm">
           <span className="w-2 h-2 rounded-full bg-[#C8A84B]"></span>
@@ -102,7 +102,7 @@ export default function HomePage() {
               desc: '在留資格の確認から雇用契約・社会保険まで、採用実務の全工程を法令ベースで習得。届出漏れ・手続きミスを防ぎます。',
             },
             {
-              title: '現場の管理職',
+              title: '外国人労働者の受け入れ現場管理職',
               desc: 'やさしい日本語での指示・評価面談・トラブルの早期発見。外国人スタッフと働く現場のマネジメント力を底上げします。',
             },
             {
@@ -125,23 +125,23 @@ export default function HomePage() {
       <section className="bg-[#132B4D] text-white">
         <div className="max-w-6xl mx-auto px-6 py-20">
           <h2 className="text-center text-2xl font-bold mb-2">
-            全24モジュール<span className="text-[#C8A84B]">(受講者向け14+管理者向け10)</span>
+            全24モジュール<span className="text-[#C8A84B]"> — 人事部門と受け入れ現場の両方に</span>
           </h2>
           <p className="text-center text-sm text-white/60 mb-12">
-            各モジュールは冊子教材と確認クイズ15問で構成。全360問・修了証発行に対応しています。
+            必修編は人事・採用担当者の実務基礎、実践編は受け入れ現場管理職と人事・労務責任者の深掘り。各モジュールは冊子+確認クイズ15問(全360問)で構成です。
           </p>
 
           <div className="grid md:grid-cols-2 gap-8">
             {/* 必修編 */}
             <div className="bg-white/5 rounded-xl border border-white/10 p-7">
               <div className="flex items-baseline justify-between mb-5">
-                <h3 className="font-bold text-lg">📘 必修編(受講者向け)</h3>
+                <h3 className="font-bold text-lg">📘 必修編(人事・採用担当者向け)</h3>
                 <span className="text-[#C8A84B] font-bold text-2xl">
                   14<span className="text-sm font-normal text-white/60 ml-1">モジュール</span>
                 </span>
               </div>
               <ul className="space-y-2.5 text-sm text-white/80">
-                <li>・外国人雇用の現状と制度の全体像</li>
+                <li>・外国人雇用の現状と制度の全体像(全社共通の基礎研修としても)</li>
                 <li>・在留資格の基礎知識と確認実務</li>
                 <li>・採用・面接・雇用契約の実務</li>
                 <li>・労務管理・社会保険・給与</li>
@@ -153,7 +153,7 @@ export default function HomePage() {
             {/* 実践編 */}
             <div className="bg-white/5 rounded-xl border border-[#C8A84B]/40 p-7">
               <div className="flex items-baseline justify-between mb-5">
-                <h3 className="font-bold text-lg">📗 実践編(人事・管理者向け)</h3>
+                <h3 className="font-bold text-lg">📗 実践編(実務の深掘り)</h3>
                 <span className="text-[#C8A84B] font-bold text-2xl">
                   10<span className="text-sm font-normal text-white/60 ml-1">モジュール</span>
                 </span>
