@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server'
+﻿import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
 
-const TO = 'toiawase@promanga.jp'
+const TO = 'tatsuya197102@gmail.com'
 // promanga.jp をResendでドメイン認証したら 'noreply@promanga.jp' に変更してください
 const FROM = process.env.RESEND_FROM ?? 'onboarding@resend.dev'
 

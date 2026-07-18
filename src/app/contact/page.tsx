@@ -19,16 +19,36 @@ function ContactForm() {
     : 'estimate'
 
   const [type, setType] = useState<string>(initialType)
-  const [company, setCompany] = useState('')
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [phone, setPhone] = useState('')
-  const [message, setMessage] = useState('')
   const [status, setStatus] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
+  const [validationMsg, setValidationMsg] = useState('')
+  const [sentEmail, setSentEmail] = useState('')
 
-  const submit = async () => {
-    if (!company || !name || !email) return
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    // 送信時にDOMから実際の値を読む(自動入力・復元にも対応)
+    const fd = new FormData(e.currentTarget)
+    const company = String(fd.get('company') ?? '').trim()
+    const name = String(fd.get('name') ?? '').trim()
+    const email = String(fd.get('email') ?? '').trim()
+    const phone = String(fd.get('phone') ?? '').trim()
+    const message = String(fd.get('message') ?? '').trim()
+
+    const missing: string[] = []
+    if (!company) missing.push('会社名')
+    if (!name) missing.push('ご担当者名')
+    if (!email) missing.push('メールアドレス')
+    if (missing.length > 0) {
+      setValidationMsg(`${missing.join('・')}を入力してください`)
+      return
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setValidationMsg('メールアドレスの形式が正しくありません')
+      return
+    }
+
+    setValidationMsg('')
     setStatus('sending')
+    setSentEmail(email)
 
     const payload = {
       type,
@@ -51,8 +71,8 @@ function ContactForm() {
         createdAt: serverTimestamp(),
       })
       saved = true
-    } catch (e) {
-      console.error('firestore save failed', e)
+    } catch (err) {
+      console.error('firestore save failed', err)
     }
 
     // 2. メール通知
@@ -63,8 +83,8 @@ function ContactForm() {
         body: JSON.stringify(payload),
       })
       mailed = res.ok
-    } catch (e) {
-      console.error('mail send failed', e)
+    } catch (err) {
+      console.error('mail send failed', err)
     }
 
     setStatus(saved || mailed ? 'done' : 'error')
@@ -78,7 +98,7 @@ function ContactForm() {
         <p className="text-sm text-[#1A2433]/70 leading-relaxed mb-8">
           お問い合わせありがとうございます。
           <br />
-          担当者より2営業日以内に {email} 宛にご連絡いたします。
+          担当者より2営業日以内に {sentEmail} 宛にご連絡いたします。
         </p>
         <Link href="/" className="text-sm font-semibold text-[#1A3E6E] underline underline-offset-4">
           トップへ戻る
@@ -91,9 +111,13 @@ function ContactForm() {
     'w-full rounded-lg border border-[#1A3E6E]/20 bg-white px-4 py-3 text-sm outline-none focus:border-[#1A3E6E] transition'
 
   return (
-    <div className="bg-white rounded-xl border border-[#1A3E6E]/10 p-7 md:p-10 shadow-sm">
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white rounded-xl border border-[#1A3E6E]/10 p-7 md:p-10 shadow-sm"
+      noValidate
+    >
       {/* 種別 */}
-      <label className="block text-sm font-semibold text-[#1A3E6E] mb-2">ご用件</label>
+      <p className="text-sm font-semibold text-[#1A3E6E] mb-2">ご用件</p>
       <div className="flex flex-wrap gap-2 mb-6">
         {TYPES.map((t) => (
           <button
@@ -113,45 +137,49 @@ function ContactForm() {
 
       <div className="grid md:grid-cols-2 gap-4 mb-4">
         <div>
-          <label className="block text-sm font-semibold text-[#1A3E6E] mb-2">
+          <label htmlFor="company" className="block text-sm font-semibold text-[#1A3E6E] mb-2">
             会社名 <span className="text-red-500">*</span>
           </label>
-          <input className={inputCls} value={company} onChange={(e) => setCompany(e.target.value)} placeholder="株式会社〇〇" />
+          <input id="company" name="company" autoComplete="organization" className={inputCls} placeholder="株式会社〇〇" />
         </div>
         <div>
-          <label className="block text-sm font-semibold text-[#1A3E6E] mb-2">
+          <label htmlFor="name" className="block text-sm font-semibold text-[#1A3E6E] mb-2">
             ご担当者名 <span className="text-red-500">*</span>
           </label>
-          <input className={inputCls} value={name} onChange={(e) => setName(e.target.value)} placeholder="山田 太郎" />
+          <input id="name" name="name" autoComplete="name" className={inputCls} placeholder="山田 太郎" />
         </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-4 mb-4">
         <div>
-          <label className="block text-sm font-semibold text-[#1A3E6E] mb-2">
+          <label htmlFor="email" className="block text-sm font-semibold text-[#1A3E6E] mb-2">
             メールアドレス <span className="text-red-500">*</span>
           </label>
-          <input className={inputCls} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="taro@example.co.jp" />
+          <input id="email" name="email" type="email" autoComplete="email" className={inputCls} placeholder="taro@example.co.jp" />
         </div>
         <div>
-          <label className="block text-sm font-semibold text-[#1A3E6E] mb-2">電話番号(任意)</label>
-          <input className={inputCls} value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="03-0000-0000" />
+          <label htmlFor="phone" className="block text-sm font-semibold text-[#1A3E6E] mb-2">
+            電話番号(任意)
+          </label>
+          <input id="phone" name="phone" type="tel" autoComplete="tel" className={inputCls} placeholder="03-0000-0000" />
         </div>
       </div>
 
-      <label className="block text-sm font-semibold text-[#1A3E6E] mb-2">
+      <label htmlFor="message" className="block text-sm font-semibold text-[#1A3E6E] mb-2">
         ご相談内容{type === 'document' ? '(任意)' : ''}
       </label>
       <textarea
+        id="message"
+        name="message"
         className={`${inputCls} min-h-32 mb-6`}
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
         placeholder={
           type === 'document'
             ? 'ご質問などあればご記入ください'
             : '受講予定人数、導入時期、ご質問などをご記入ください'
         }
       />
+
+      {validationMsg && <p className="text-sm text-red-600 mb-4">{validationMsg}</p>}
 
       {status === 'error' && (
         <p className="text-sm text-red-600 mb-4">
@@ -160,9 +188,8 @@ function ContactForm() {
       )}
 
       <button
-        type="button"
-        onClick={submit}
-        disabled={!company || !name || !email || status === 'sending'}
+        type="submit"
+        disabled={status === 'sending'}
         className="w-full bg-[#1A3E6E] text-white font-bold py-3.5 rounded-lg hover:bg-[#15335C] transition disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {status === 'sending' ? '送信中…' : '送信する'}
@@ -174,7 +201,7 @@ function ContactForm() {
         </Link>
         に基づき取り扱います。
       </p>
-    </div>
+    </form>
   )
 }
 
