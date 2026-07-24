@@ -1,25 +1,32 @@
-// firestore.rules  (完全版)
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     function isSignedIn() { return request.auth != null; }
+
     function isAdmin(companyId) {
       return isSignedIn() &&
         get(/databases/$(database)/documents/companies/$(companyId)/users/$(request.auth.uid)).data.role == 'admin';
     }
+
     function isSelf(userId) { return isSignedIn() && request.auth.uid == userId; }
 
-    // userIndex：本人のみ読み取り可（Cloud Functionsが書き込む）
+    // userIndex: 本人のみ読み取り可(書き込みはCloud Functionsのみ)
     match /userIndex/{userId} {
       allow read:  if isSelf(userId);
       allow write: if false;
     }
 
-    // クイズ問題バンク：認証済みのみ読み取り可
+    // クイズ問題バンク: 認証済みのみ読み取り可
     match /quizBank/{moduleId} {
       allow read:  if isSignedIn();
       allow write: if false;
+    }
+
+    // 問い合わせフォーム(LP): 誰でも作成のみ可、閲覧はConsoleから
+    match /inquiries/{id} {
+      allow create: if true;
+      allow read, update, delete: if false;
     }
 
     // 企業データ
