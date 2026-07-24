@@ -50,6 +50,16 @@ export default function LearnDashboard() {
   const overallPct = Math.round((passedCount / coreModules.length) * 100)
   const remaining = coreModules.length - passedCount
 
+  // 学習分析(実データ集計)
+  const totalAttempts = visibleModules.reduce(
+    (s, m) => s + (progressMap[m.id]?.quizAttempts?.length ?? 0), 0)
+  const videosWatched = coreModules.filter(m => progressMap[m.id]?.videoWatched).length
+  const avgRead = Math.round(
+    coreModules.reduce((s, m) => s + (progressMap[m.id]?.bookReadPercent ?? 0), 0) /
+    coreModules.length)
+  const practicePct = practiceModules.length > 0
+    ? Math.round((practicePassed / practiceModules.length) * 100) : 0
+
   // 「続きから学習」対象: 受講中の先頭 → なければ未着手の先頭
   const orderedModules = [...coreModules, ...practiceModules]
   const continueModule =
@@ -129,7 +139,31 @@ export default function LearnDashboard() {
             <p className="text-xs text-white/70 mt-0.5">{lmsUser?.displayName ?? user?.email}</p>
           </div>
           <div className="flex items-center gap-4">
-            {allPassed && (
+            {/* 編別の進捗バー */}
+          {practiceModules.length > 0 && (
+            <div className="mt-4 space-y-2.5">
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-gray-500 w-24 shrink-0">📘 必修編</span>
+                <div className="flex-1 bg-gray-100 rounded-full h-2">
+                  <div className="bg-primary h-2 rounded-full" style={{ width: `${overallPct}%` }} />
+                </div>
+                <span className="text-xs font-semibold text-primary w-16 text-right">
+                  {passedCount}/{coreModules.length} 合格
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-gray-500 w-24 shrink-0">📗 実践編</span>
+                <div className="flex-1 bg-gray-100 rounded-full h-2">
+                  <div className="bg-accent h-2 rounded-full" style={{ width: `${practicePct}%` }} />
+                </div>
+                <span className="text-xs font-semibold text-[#8A6D1F] w-16 text-right">
+                  {practicePassed}/{practiceModules.length} 合格
+                </span>
+              </div>
+            </div>
+          )}
+
+          {allPassed && (
               <Link
                 href="/learn/certificate"
                 className="text-xs bg-accent text-primary font-bold px-3 py-1.5 rounded-full"
@@ -180,6 +214,24 @@ export default function LearnDashboard() {
           </Link>
         )}
 
+        {/* 学習サマリー */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          {[
+            { icon: '🏅', n: `${passedCount}`, sub: `/ ${coreModules.length}`, label: '合格モジュール' },
+            { icon: '📝', n: `${totalAttempts}`, sub: '回', label: 'クイズ挑戦' },
+            { icon: '🎬', n: `${videosWatched}`, sub: '本', label: '動画視聴' },
+            { icon: '📖', n: `${avgRead}`, sub: '%', label: '平均読了率' },
+          ].map(k => (
+            <div key={k.label} className="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3">
+              <p className="text-xs text-gray-400">{k.icon} {k.label}</p>
+              <p className="mt-1">
+                <span className="text-2xl font-bold text-primary">{k.n}</span>
+                <span className="text-xs text-gray-400 ml-1">{k.sub}</span>
+              </p>
+            </div>
+          ))}
+        </div>
+
         {/* 全体進捗 */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
           <div className="flex items-end justify-between mb-3">
@@ -218,6 +270,30 @@ export default function LearnDashboard() {
             </span>
           </div>
 
+          {/* 編別の進捗バー */}
+          {practiceModules.length > 0 && (
+            <div className="mt-4 space-y-2.5">
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-gray-500 w-24 shrink-0">📘 必修編</span>
+                <div className="flex-1 bg-gray-100 rounded-full h-2">
+                  <div className="bg-primary h-2 rounded-full" style={{ width: `${overallPct}%` }} />
+                </div>
+                <span className="text-xs font-semibold text-primary w-16 text-right">
+                  {passedCount}/{coreModules.length} 合格
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-gray-500 w-24 shrink-0">📗 実践編</span>
+                <div className="flex-1 bg-gray-100 rounded-full h-2">
+                  <div className="bg-accent h-2 rounded-full" style={{ width: `${practicePct}%` }} />
+                </div>
+                <span className="text-xs font-semibold text-[#8A6D1F] w-16 text-right">
+                  {practicePassed}/{practiceModules.length} 合格
+                </span>
+              </div>
+            </div>
+          )}
+
           {allPassed && (
             <p className="text-center text-green-700 font-semibold mt-4">
               🎉 おめでとうございます!必修編(全14モジュール)を修了しました。
@@ -235,7 +311,7 @@ export default function LearnDashboard() {
 
         {practiceModules.length > 0 && (
           <>
-            <h2 className="text-base font-bold text-gray-700 mt-8 mb-1">📗 実践編(定着支援・法務労務)</h2>
+            <h2 className="text-base font-bold text-gray-700 mt-8 mb-1">📗 実践編(人事マネジメント)</h2>
             <p className="text-xs text-gray-400 mb-3">
               冊子+クイズで学ぶ実務コース(動画なし・修了証の対象外)| {practicePassed} /{' '}
               {practiceModules.length} 合格
