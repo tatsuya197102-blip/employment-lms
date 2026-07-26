@@ -15,7 +15,7 @@ const STATIC_VIDEO_MAP: Record<string, string[]> = {
   M9:  ['vzrvCqfhvg4', 'oo2BfVth1qM', 'eKsIm4EUpzM', '8kAp7w8Cmew'],
   M10: ['xB6-e5AY8IM', '2mcHJfnc1yo'],
   M11: ['5hhknVhHCfE', 'k6LkyvAbI48', 'mmJKOaTAW2k', '6yJrzHAPLjE', 'OL-A5OTeVxs', 'TuHIPHas7cs'],
-  M12: [],
+  M12: ['dAFC16Rg-LQ', 'G42l88teamI'],
   M13: ['5FdfDSk6MSs', '0B-5nnJRUyo', 'pvnib9ImvRo'],
   M14: ['aomuI4EV4E4'],
 }
@@ -27,3 +27,4 @@ export async function GET() {
     },
   })
 }
+
