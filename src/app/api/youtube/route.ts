@@ -1,5 +1,5 @@
 // src/app/api/youtube/route.ts
-// MARKER: LMS_VIDEO_MAP_BUNNY_V1 (2026-08-17)
+// MARKER: LMS_VIDEO_MAP_BUNNY_V2 (2026-08-17)
 // 【M1】〜【M14】タグ別スタティックマップ。
 // YouTube ID → Bunny Stream 動画GUID(ライブラリ employment-lms / ID 729943)へ移行済み。
 // パス名 /api/youtube は既存クライアント(useYouTubeVideos)互換のため維持。
@@ -8,7 +8,7 @@
 import { NextResponse } from 'next/server'
 
 const STATIC_VIDEO_MAP: Record<string, string[]> = {
-  M1:  ['6dee6718-3ed6-48ee-af74-8ea25d4589dd', '046ab982-4881-4eb2-b62c-91d912bd229f', 'a1769150-55a9-4210-9e23-1f48ccb96637'], // 8a, 13c, 14c
+  M1:  ['046ab982-4881-4eb2-b62c-91d912bd229f', 'a1769150-55a9-4210-9e23-1f48ccb96637', '6dee6718-3ed6-48ee-af74-8ea25d4589dd'], // 13c, 14c, 8a (順序修正 2026-08-17)
   M2:  ['09516d65-c548-4c6e-8e2f-4690c88b950c', 'b2b4b422-5f42-42d6-b07d-adc1d921e8b6', '56a677c4-91fc-4e7e-8ff7-fcda291ad38a', '460e8ba7-c11b-4a30-b42f-5415f4d34b8a', '04dad13b-5881-47a4-b461-0716e920875a'], // 2a, 3a, 9b, 10b, 11b
   M3:  ['d621da00-99e1-4897-9841-87e13267e6e9', '368ecaef-3b49-46d9-867d-57ad6e0cc6af', '9aafaedf-2e11-4419-9f77-810d6a4b9808', 'a2d5f716-9be3-435b-a655-a36a9685742d'], // 16c, 17c, 18c, 19c
   M4:  ['6a9688b7-50dc-4c23-8496-441dddc46e51'], // 15c
