@@ -13,26 +13,66 @@ type ProgressMap = Record<string, ModuleProgress | null>
 type Status = 'notStarted' | 'inProgress' | 'passed'
 
 export default function LearnDashboard() {
-  const { user, lmsUser, signOut } = useAuth()
+  const { user, lmsUser, signOut, loading: authLoading } = useAuth()
   const visibleModules = MODULES.filter(m => !m.audience || m.audience === 'learner' || lmsUser?.role === 'admin')
   const coreModules = visibleModules.filter(m => !m.audience || m.audience === 'learner')
   const practiceModules = visibleModules.filter(m => m.audience === 'admin')
   const [progressMap, setProgressMap] = useState<ProgressMap>({})
   const practicePassed = practiceModules.filter(m => progressMap[m.id]?.passed).length
   const [loading, setLoading] = useState(true)
+  const [accountMissing, setAccountMissing] = useState(false)
 
   useEffect(() => {
-    if (!user || !lmsUser) return
-    const fetchAll = async () => {
-      const allProgress = await getAllModuleProgress(lmsUser.companyId, user.uid)
-      const entries = visibleModules.map(m => [m.id, allProgress[m.id] ?? null] as [string, ModuleProgress | null])
-      setProgressMap(Object.fromEntries(entries))
+    // 認証確認がまだ終わっていない間は待つ(レイアウト側のスピナーが出ている)
+    if (authLoading) return
+    // 未ログインはレイアウト側が /learn/login へリダイレクトする
+    if (!user) return
+    // ログイン済みなのに Firestore の受講者レコードが無い → 無限スピナーにせずエラー画面へ
+    if (!lmsUser) {
+      setAccountMissing(true)
       setLoading(false)
+      return
+    }
+    const fetchAll = async () => {
+      try {
+        const allProgress = await getAllModuleProgress(lmsUser.companyId, user.uid)
+        const entries = visibleModules.map(m => [m.id, allProgress[m.id] ?? null] as [string, ModuleProgress | null])
+        setProgressMap(Object.fromEntries(entries))
+      } catch (e) {
+        // 進捗の取得に失敗しても画面ごと止めない(進捗は未着手表示になる)
+        console.error('Failed to fetch progress:', e)
+      } finally {
+        setLoading(false)
+      }
     }
     fetchAll()
-  }, [user, lmsUser])
+  }, [authLoading, user, lmsUser])
 
   if (loading) return <LoadingSpinner />
+
+  if (accountMissing) {
+    return (
+      <div className="min-h-screen bg-[#F4F2EE] flex items-center justify-center px-4">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 max-w-md w-full text-center">
+          <p className="text-3xl mb-3">⚠️</p>
+          <h1 className="font-bold text-gray-800 mb-2">アカウント情報が見つかりません</h1>
+          <p className="text-sm text-gray-500 leading-relaxed">
+            ログインは成功しましたが、このアカウント({user?.email})の受講者情報が登録されていません。
+            管理者にお問い合わせください。
+          </p>
+          <button
+            onClick={async () => {
+              await signOut()
+              window.location.href = '/'
+            }}
+            className="mt-6 text-sm font-semibold text-primary underline"
+          >
+            ログアウトして戻る
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   const getStatus = (moduleId: string): Status => {
     const p = progressMap[moduleId]
