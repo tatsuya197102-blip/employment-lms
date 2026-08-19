@@ -10,8 +10,11 @@ const NAV = [
   { href: '/admin',             label: 'ダッシュボード' },
   { href: '/admin/users',       label: '受講者管理' },
   { href: '/admin/completions', label: '修了者リスト' },
-  { href: '/admin/agencies',    label: '代理店発行' },
 ]
+
+// 代理店発行はJMC社内の運用担当だけに見せる（裏側のCloud Functionsと同じ一覧にすること）
+const AGENCY_OPERATORS = ['admin@reeben.net']
+const AGENCY_NAV = { href: '/admin/agencies', label: '代理店発行' }
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, lmsUser, loading, signOut } = useAuth()
@@ -44,7 +47,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <p className="text-xs text-white/60 mt-0.5">管理者パネル</p>
         </div>
         <nav className="flex-1 px-3 py-4 space-y-1">
-          {NAV.map(n => (
+          {(AGENCY_OPERATORS.includes((user.email || '').toLowerCase())
+            ? [...NAV, AGENCY_NAV]
+            : NAV
+          ).map(n => (
             <Link key={n.href} href={n.href}
               className={`block px-3 py-2 rounded-lg text-sm transition
                 ${pathname === n.href

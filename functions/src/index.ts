@@ -236,6 +236,31 @@ interface CreateAgencyData {
 
 const AGENCY_MAIL_DOMAIN = 'demo-gwl.jp'
 
+// 代理店の発行・一覧・パスワード再発行を行えるアカウント（JMC社内の運用担当）
+// 追加したい場合はこの配列にメールアドレスを足すだけでよい
+const AGENCY_OPERATORS = [
+  'admin@reeben.net',
+]
+
+/**
+ * 呼び出し元が代理店発行の運用担当かを確認する。
+ * 権限が無ければ HttpsError を投げる。
+ */
+async function assertAgencyOperator(
+  context: functions.https.CallableContext
+): Promise<void> {
+  if (!context.auth) {
+    throw new functions.https.HttpsError('unauthenticated', 'ログインが必要です。')
+  }
+  const email = (context.auth.token.email || '').toLowerCase()
+  if (!AGENCY_OPERATORS.includes(email)) {
+    throw new functions.https.HttpsError(
+      'permission-denied',
+      'この操作を行う権限がありません。'
+    )
+  }
+}
+
 /** 紛らわしい文字（0/O/1/l/I）を除いた読み上げやすいパスワードを作る */
 function generatePassword(): string {
   const upper  = 'ABCDEFGHJKMNPQRSTUVWXYZ'
@@ -260,23 +285,8 @@ export const createAgency = functions
   .runWith({ timeoutSeconds: 120 })
   .https
   .onCall(async (data: CreateAgencyData, context) => {
-    // 認証チェック
-    if (!context.auth) {
-      throw new functions.https.HttpsError('unauthenticated', 'ログインが必要です。')
-    }
-
-    // 呼び出し元が「いずれかの会社の管理者」であることを確認する
-    const callerIndex = await db.doc(`userIndex/${context.auth.uid}`).get()
-    const callerCompanyId = callerIndex.data()?.companyId
-    if (!callerCompanyId) {
-      throw new functions.https.HttpsError('permission-denied', '管理者権限が必要です。')
-    }
-    const callerSnap = await db
-      .doc(`companies/${callerCompanyId}/users/${context.auth.uid}`)
-      .get()
-    if (!callerSnap.exists || callerSnap.data()?.role !== 'admin') {
-      throw new functions.https.HttpsError('permission-denied', '管理者権限が必要です。')
-    }
+    // 代理店発行の運用担当のみ許可
+    await assertAgencyOperator(context)
 
     const companyId   = (data.companyId ?? '').trim().toLowerCase()
     const companyName = (data.companyName ?? '').trim()
@@ -399,20 +409,7 @@ export const listAgencies = functions
   .region('asia-northeast1')
   .https
   .onCall(async (_data, context) => {
-    if (!context.auth) {
-      throw new functions.https.HttpsError('unauthenticated', 'ログインが必要です。')
-    }
-    const callerIndex = await db.doc(`userIndex/${context.auth.uid}`).get()
-    const callerCompanyId = callerIndex.data()?.companyId
-    if (!callerCompanyId) {
-      throw new functions.https.HttpsError('permission-denied', '管理者権限が必要です。')
-    }
-    const callerSnap = await db
-      .doc(`companies/${callerCompanyId}/users/${context.auth.uid}`)
-      .get()
-    if (!callerSnap.exists || callerSnap.data()?.role !== 'admin') {
-      throw new functions.https.HttpsError('permission-denied', '管理者権限が必要です。')
-    }
+    await assertAgencyOperator(context)
 
     const snap = await db.collection('companies').where('isAgency', '==', true).get()
     const agencies = snap.docs.map(d => {
@@ -442,20 +439,7 @@ export const resetAgencyPassword = functions
   .region('asia-northeast1')
   .https
   .onCall(async (data: ResetAgencyPasswordData, context) => {
-    if (!context.auth) {
-      throw new functions.https.HttpsError('unauthenticated', 'ログインが必要です。')
-    }
-    const callerIndex = await db.doc(`userIndex/${context.auth.uid}`).get()
-    const callerCompanyId = callerIndex.data()?.companyId
-    if (!callerCompanyId) {
-      throw new functions.https.HttpsError('permission-denied', '管理者権限が必要です。')
-    }
-    const callerSnap = await db
-      .doc(`companies/${callerCompanyId}/users/${context.auth.uid}`)
-      .get()
-    if (!callerSnap.exists || callerSnap.data()?.role !== 'admin') {
-      throw new functions.https.HttpsError('permission-denied', '管理者権限が必要です。')
-    }
+    await assertAgencyOperator(context)
 
     const companyId = (data.companyId ?? '').trim().toLowerCase()
     const prefix = data.target === 'admin' ? 'admin' : 'staff01'

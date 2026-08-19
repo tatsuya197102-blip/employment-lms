@@ -26,8 +26,11 @@ type Agency = {
 
 const functions = getFunctions(app, 'asia-northeast1')
 
+// 代理店の発行を行えるアカウント（裏側のCloud Functionsと同じ一覧にすること）
+const AGENCY_OPERATORS = ['admin@reeben.net']
+
 export default function AgenciesPage() {
-  const { user, lmsUser, loading: authLoading } = useAuth()
+  const { user, loading: authLoading } = useAuth()
 
   const [companyId, setCompanyId] = useState('')
   const [companyName, setCompanyName] = useState('')
@@ -60,7 +63,9 @@ export default function AgenciesPage() {
 
   if (authLoading) return <LoadingSpinner />
 
-  if (!lmsUser || lmsUser.role !== 'admin') {
+  const isOperator = AGENCY_OPERATORS.includes((user?.email || '').toLowerCase())
+
+  if (!isOperator) {
     return (
       <div className="min-h-screen bg-[#F4F2EE] flex items-center justify-center px-4">
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 max-w-md w-full text-center">
