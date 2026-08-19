@@ -10,6 +10,7 @@ const NAV = [
   { href: '/admin',             label: 'ダッシュボード' },
   { href: '/admin/users',       label: '受講者管理' },
   { href: '/admin/completions', label: '修了者リスト' },
+  { href: '/admin/agencies',    label: '代理店発行' },
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

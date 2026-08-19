@@ -35,16 +35,18 @@ export default function AdminLoginPage() {
           <p className="text-sm text-white/60 mt-1">管理者ログイン</p>
         </div>
         <div className="bg-white rounded-2xl shadow-lg p-8">
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5" autoComplete="off">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">メールアドレス</label>
               <input type="email" required value={email} onChange={e => setEmail(e.target.value)}
+                autoComplete="off" name="admin-login-id" id="admin-login-id"
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm"
                 placeholder="admin@example.com" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">パスワード</label>
               <input type="password" required value={password} onChange={e => setPassword(e.target.value)}
+                autoComplete="new-password" name="admin-login-pw" id="admin-login-pw"
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm"
                 placeholder="••••••••" />
             </div>
