@@ -219,3 +219,255 @@ async function sendInviteEmail(
     `,
   })
 }
+
+// ─────────────────────────────────────────────
+// 4. 代理店の一括発行 Callable Function
+//    会社ID + 会社名 を渡すと以下をまとめて作成する:
+//      - companies/{companyId}                        （会社ドキュメント）
+//      - companies/{companyId}/users/{adminUid}       （管理者 role: admin）
+//      - companies/{companyId}/users/{learnerUid}     （デモ受講者 role: learner）
+//      - userIndex/{adminUid} / userIndex/{learnerUid}（ログイン時の会社特定用）
+//    メールアドレスとパスワードは自動生成し、生成結果を呼び出し元へ返す
+// ─────────────────────────────────────────────
+interface CreateAgencyData {
+  companyId: string   // 例: reeben（英小文字・数字・ハイフンのみ）
+  companyName: string // 例: 株式会社リーベン
+}
+
+const AGENCY_MAIL_DOMAIN = 'demo-gwl.jp'
+
+/** 紛らわしい文字（0/O/1/l/I）を除いた読み上げやすいパスワードを作る */
+function generatePassword(): string {
+  const upper  = 'ABCDEFGHJKMNPQRSTUVWXYZ'
+  const lower  = 'abcdefghijkmnpqrstuvwxyz'
+  const digits = '23456789'
+  const marks  = '#$%&@'
+  const all    = upper + lower + digits + marks
+  const pick = (chars: string) => chars[Math.floor(Math.random() * chars.length)]
+  // 各種を最低1文字ずつ含めたうえで12文字にする
+  const base = [pick(upper), pick(lower), pick(digits), pick(marks)]
+  while (base.length < 12) base.push(pick(all))
+  // 並びをシャッフル
+  for (let i = base.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[base[i], base[j]] = [base[j], base[i]]
+  }
+  return base.join('')
+}
+
+export const createAgency = functions
+  .region('asia-northeast1')
+  .runWith({ timeoutSeconds: 120 })
+  .https
+  .onCall(async (data: CreateAgencyData, context) => {
+    // 認証チェック
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'ログインが必要です。')
+    }
+
+    // 呼び出し元が「いずれかの会社の管理者」であることを確認する
+    const callerIndex = await db.doc(`userIndex/${context.auth.uid}`).get()
+    const callerCompanyId = callerIndex.data()?.companyId
+    if (!callerCompanyId) {
+      throw new functions.https.HttpsError('permission-denied', '管理者権限が必要です。')
+    }
+    const callerSnap = await db
+      .doc(`companies/${callerCompanyId}/users/${context.auth.uid}`)
+      .get()
+    if (!callerSnap.exists || callerSnap.data()?.role !== 'admin') {
+      throw new functions.https.HttpsError('permission-denied', '管理者権限が必要です。')
+    }
+
+    const companyId   = (data.companyId ?? '').trim().toLowerCase()
+    const companyName = (data.companyName ?? '').trim()
+
+    // 入力チェック
+    if (!/^[a-z0-9-]{2,30}$/.test(companyId)) {
+      throw new functions.https.HttpsError(
+        'invalid-argument',
+        '会社IDは半角英小文字・数字・ハイフンで2〜30文字にしてください。'
+      )
+    }
+    if (!companyName) {
+      throw new functions.https.HttpsError('invalid-argument', '会社名を入力してください。')
+    }
+
+    // 会社IDの重複チェック
+    const existing = await db.doc(`companies/${companyId}`).get()
+    if (existing.exists) {
+      throw new functions.https.HttpsError(
+        'already-exists',
+        `会社ID「${companyId}」はすでに使われています。別のIDにしてください。`
+      )
+    }
+
+    const adminEmail    = `admin@${companyId}.${AGENCY_MAIL_DOMAIN}`
+    const learnerEmail  = `staff01@${companyId}.${AGENCY_MAIL_DOMAIN}`
+    const adminPassword   = generatePassword()
+    const learnerPassword = generatePassword()
+
+    // 作成済みのものを控えておき、途中で失敗したら巻き戻す
+    const createdUids: string[] = []
+
+    try {
+      // 1) 会社ドキュメント
+      await db.doc(`companies/${companyId}`).set({
+        name: companyName,
+        adminEmail,
+        plan: 'agency',
+        isAgency: true,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      })
+
+      // 2) 管理者アカウント
+      const adminRecord = await admin.auth().createUser({
+        email: adminEmail,
+        displayName: `${companyName} 管理者`,
+        password: adminPassword,
+        emailVerified: false,
+      })
+      createdUids.push(adminRecord.uid)
+      await db.doc(`companies/${companyId}/users/${adminRecord.uid}`).set({
+        email: adminEmail,
+        displayName: `${companyName} 管理者`,
+        role: 'admin',
+        companyId,
+        invitedAt: admin.firestore.FieldValue.serverTimestamp(),
+      })
+      await db.doc(`userIndex/${adminRecord.uid}`).set({ companyId })
+
+      // 3) デモ受講者アカウント
+      const learnerRecord = await admin.auth().createUser({
+        email: learnerEmail,
+        displayName: `${companyName} デモ受講者`,
+        password: learnerPassword,
+        emailVerified: false,
+      })
+      createdUids.push(learnerRecord.uid)
+      await db.doc(`companies/${companyId}/users/${learnerRecord.uid}`).set({
+        email: learnerEmail,
+        displayName: `${companyName} デモ受講者`,
+        role: 'learner',
+        companyId,
+        invitedAt: admin.firestore.FieldValue.serverTimestamp(),
+      })
+      await db.doc(`userIndex/${learnerRecord.uid}`).set({ companyId })
+
+      functions.logger.info(`Agency created: ${companyId} (${companyName})`)
+
+      return {
+        success: true,
+        companyId,
+        companyName,
+        admin:   { email: adminEmail,   password: adminPassword },
+        learner: { email: learnerEmail, password: learnerPassword },
+      }
+    } catch (err: unknown) {
+      // 途中で失敗した場合は作りかけを消して、やり直せる状態に戻す
+      const error = err as { code?: string; message?: string }
+      functions.logger.error('createAgency error:', error)
+
+      for (const uid of createdUids) {
+        try {
+          await admin.auth().deleteUser(uid)
+          await db.doc(`companies/${companyId}/users/${uid}`).delete()
+          await db.doc(`userIndex/${uid}`).delete()
+        } catch (cleanupErr) {
+          functions.logger.error('createAgency cleanup failed:', cleanupErr)
+        }
+      }
+      try {
+        await db.doc(`companies/${companyId}`).delete()
+      } catch (cleanupErr) {
+        functions.logger.error('createAgency cleanup (company) failed:', cleanupErr)
+      }
+
+      if (error.code === 'auth/email-already-exists') {
+        throw new functions.https.HttpsError(
+          'already-exists',
+          'このメールアドレスはすでに登録されています。別の会社IDにしてください。'
+        )
+      }
+      throw new functions.https.HttpsError('internal', '代理店の発行に失敗しました。')
+    }
+  })
+
+// ─────────────────────────────────────────────
+// 5. 代理店一覧の取得 Callable Function
+// ─────────────────────────────────────────────
+export const listAgencies = functions
+  .region('asia-northeast1')
+  .https
+  .onCall(async (_data, context) => {
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'ログインが必要です。')
+    }
+    const callerIndex = await db.doc(`userIndex/${context.auth.uid}`).get()
+    const callerCompanyId = callerIndex.data()?.companyId
+    if (!callerCompanyId) {
+      throw new functions.https.HttpsError('permission-denied', '管理者権限が必要です。')
+    }
+    const callerSnap = await db
+      .doc(`companies/${callerCompanyId}/users/${context.auth.uid}`)
+      .get()
+    if (!callerSnap.exists || callerSnap.data()?.role !== 'admin') {
+      throw new functions.https.HttpsError('permission-denied', '管理者権限が必要です。')
+    }
+
+    const snap = await db.collection('companies').where('isAgency', '==', true).get()
+    const agencies = snap.docs.map(d => {
+      const v = d.data()
+      const created = v.createdAt as admin.firestore.Timestamp | undefined
+      return {
+        companyId: d.id,
+        companyName: v.name ?? '',
+        adminEmail: v.adminEmail ?? '',
+        createdAt: created ? created.toDate().toISOString() : null,
+      }
+    })
+    agencies.sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))
+    return { agencies }
+  })
+
+// ─────────────────────────────────────────────
+// 6. パスワード再発行 Callable Function
+//    代理店がパスワードを忘れた場合に、管理画面から作り直す
+// ─────────────────────────────────────────────
+interface ResetAgencyPasswordData {
+  companyId: string
+  target: 'admin' | 'learner'
+}
+
+export const resetAgencyPassword = functions
+  .region('asia-northeast1')
+  .https
+  .onCall(async (data: ResetAgencyPasswordData, context) => {
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'ログインが必要です。')
+    }
+    const callerIndex = await db.doc(`userIndex/${context.auth.uid}`).get()
+    const callerCompanyId = callerIndex.data()?.companyId
+    if (!callerCompanyId) {
+      throw new functions.https.HttpsError('permission-denied', '管理者権限が必要です。')
+    }
+    const callerSnap = await db
+      .doc(`companies/${callerCompanyId}/users/${context.auth.uid}`)
+      .get()
+    if (!callerSnap.exists || callerSnap.data()?.role !== 'admin') {
+      throw new functions.https.HttpsError('permission-denied', '管理者権限が必要です。')
+    }
+
+    const companyId = (data.companyId ?? '').trim().toLowerCase()
+    const prefix = data.target === 'admin' ? 'admin' : 'staff01'
+    const email = `${prefix}@${companyId}.${AGENCY_MAIL_DOMAIN}`
+
+    try {
+      const userRecord = await admin.auth().getUserByEmail(email)
+      const newPassword = generatePassword()
+      await admin.auth().updateUser(userRecord.uid, { password: newPassword })
+      return { success: true, email, password: newPassword }
+    } catch (err: unknown) {
+      functions.logger.error('resetAgencyPassword error:', err)
+      throw new functions.https.HttpsError('not-found', 'アカウントが見つかりませんでした。')
+    }
+  })
