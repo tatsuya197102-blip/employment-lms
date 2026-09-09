@@ -1,12 +1,18 @@
 // functions/src/index.ts
 // Cloud Functions for employment-lms
 
-import * as functions from 'firebase-functions'
-import * as admin from 'firebase-admin'
+// firebase-functions 6.0.0 でパッケージの既定の入口が第1世代から第2世代に変わったため、
+// 第1世代のまま動かすには 'firebase-functions/v1' を読み込む必要がある（関数の作り直しを防ぐ）
+import * as functions from 'firebase-functions/v1'
+// firebase-admin 13 以降、まとめ書き（admin.firestore / admin.auth）が廃止されたため、
+// 必要な機能を個別に読み込む書き方に変更（動きは同じ）
+import { initializeApp } from 'firebase-admin/app'
+import { getFirestore, FieldValue, Timestamp } from 'firebase-admin/firestore'
+import { getAuth } from 'firebase-admin/auth'
 import * as nodemailer from 'nodemailer'
 
-admin.initializeApp()
-const db = admin.firestore()
+initializeApp()
+const db = getFirestore()
 
 // ─────────────────────────────────────────────
 // 1. クイズ合格時に passedAt を記録（改ざん防止）
@@ -29,7 +35,7 @@ export const onQuizPassed = functions
     if (!justPassed) return
 
     await change.after.ref.update({
-      passedAt: admin.firestore.FieldValue.serverTimestamp(),
+      passedAt: FieldValue.serverTimestamp(),
     })
 
     // 全モジュール合格チェック → 修了フラグを companies/{companyId}/users/{userId} に記録
@@ -44,7 +50,7 @@ export const onQuizPassed = functions
 
     if (passedCount >= MODULE_COUNT) {
       await db.doc(`companies/${companyId}/users/${userId}`).update({
-        completedAt: admin.firestore.FieldValue.serverTimestamp(),
+        completedAt: FieldValue.serverTimestamp(),
         completed: true,
       })
       functions.logger.info(`User ${userId} completed all modules!`)
@@ -86,7 +92,7 @@ export const inviteUser = functions
     try {
       // Firebase Auth ユーザーを作成（初期パスワードはランダム）
       const tempPassword = Math.random().toString(36).slice(-10) + 'Aa1!'
-      const userRecord = await admin.auth().createUser({
+      const userRecord = await getAuth().createUser({
         email,
         displayName,
         password: tempPassword,
@@ -99,14 +105,14 @@ export const inviteUser = functions
         displayName,
         role: 'learner',
         companyId,
-        invitedAt: admin.firestore.FieldValue.serverTimestamp(),
+        invitedAt: FieldValue.serverTimestamp(),
       })
 
       // userIndex に companyId を記録（AuthContextで使用）
       await db.doc(`userIndex/${userRecord.uid}`).set({ companyId })
 
       // パスワードリセットリンクを生成してメール送信
-      const resetLink = await admin.auth().generatePasswordResetLink(email)
+      const resetLink = await getAuth().generatePasswordResetLink(email)
       await sendInviteEmail(email, displayName, resetLink)
 
       return { success: true, uid: userRecord.uid }
@@ -142,7 +148,7 @@ export const bulkInviteUsers = functions
     for (const user of data.users) {
       try {
         const tempPassword = Math.random().toString(36).slice(-10) + 'Aa1!'
-        const userRecord = await admin.auth().createUser({
+        const userRecord = await getAuth().createUser({
           email: user.email,
           displayName: user.displayName,
           password: tempPassword,
@@ -152,11 +158,11 @@ export const bulkInviteUsers = functions
           displayName: user.displayName,
           role: 'learner',
           companyId: data.companyId,
-          invitedAt: admin.firestore.FieldValue.serverTimestamp(),
+          invitedAt: FieldValue.serverTimestamp(),
         })
         await db.doc(`userIndex/${userRecord.uid}`).set({ companyId: data.companyId })
 
-        const resetLink = await admin.auth().generatePasswordResetLink(user.email)
+        const resetLink = await getAuth().generatePasswordResetLink(user.email)
         await sendInviteEmail(user.email, user.displayName, resetLink)
         results.push({ email: user.email, success: true })
       } catch (err: unknown) {
@@ -177,8 +183,10 @@ async function sendInviteEmail(
   displayName: string,
   resetLink: string
 ): Promise<void> {
-  const mailUser = functions.config().mail?.user
-  const mailPass = functions.config().mail?.pass
+  // functions.config() は 2025年12月31日にサービス終了。環境変数（functions/.env）に置き換え済み。
+  // 未設定のときは送信せず素通りする（現在と同じ動き）。将来 Resend に置き換える予定。
+  const mailUser = process.env.MAIL_USER
+  const mailPass = process.env.MAIL_PASS
 
   if (!mailUser || !mailPass) {
     functions.logger.warn('Mail config not set. Skipping email send.')
@@ -326,11 +334,11 @@ export const createAgency = functions
         adminEmail,
         plan: 'agency',
         isAgency: true,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: FieldValue.serverTimestamp(),
       })
 
       // 2) 管理者アカウント
-      const adminRecord = await admin.auth().createUser({
+      const adminRecord = await getAuth().createUser({
         email: adminEmail,
         displayName: `${companyName} 管理者`,
         password: adminPassword,
@@ -342,12 +350,12 @@ export const createAgency = functions
         displayName: `${companyName} 管理者`,
         role: 'admin',
         companyId,
-        invitedAt: admin.firestore.FieldValue.serverTimestamp(),
+        invitedAt: FieldValue.serverTimestamp(),
       })
       await db.doc(`userIndex/${adminRecord.uid}`).set({ companyId })
 
       // 3) デモ受講者アカウント
-      const learnerRecord = await admin.auth().createUser({
+      const learnerRecord = await getAuth().createUser({
         email: learnerEmail,
         displayName: `${companyName} デモ受講者`,
         password: learnerPassword,
@@ -359,7 +367,7 @@ export const createAgency = functions
         displayName: `${companyName} デモ受講者`,
         role: 'learner',
         companyId,
-        invitedAt: admin.firestore.FieldValue.serverTimestamp(),
+        invitedAt: FieldValue.serverTimestamp(),
       })
       await db.doc(`userIndex/${learnerRecord.uid}`).set({ companyId })
 
@@ -379,7 +387,7 @@ export const createAgency = functions
 
       for (const uid of createdUids) {
         try {
-          await admin.auth().deleteUser(uid)
+          await getAuth().deleteUser(uid)
           await db.doc(`companies/${companyId}/users/${uid}`).delete()
           await db.doc(`userIndex/${uid}`).delete()
         } catch (cleanupErr) {
@@ -414,7 +422,7 @@ export const listAgencies = functions
     const snap = await db.collection('companies').where('isAgency', '==', true).get()
     const agencies = snap.docs.map(d => {
       const v = d.data()
-      const created = v.createdAt as admin.firestore.Timestamp | undefined
+      const created = v.createdAt as Timestamp | undefined
       return {
         companyId: d.id,
         companyName: v.name ?? '',
@@ -446,9 +454,9 @@ export const resetAgencyPassword = functions
     const email = `${prefix}@${companyId}.${AGENCY_MAIL_DOMAIN}`
 
     try {
-      const userRecord = await admin.auth().getUserByEmail(email)
+      const userRecord = await getAuth().getUserByEmail(email)
       const newPassword = generatePassword()
-      await admin.auth().updateUser(userRecord.uid, { password: newPassword })
+      await getAuth().updateUser(userRecord.uid, { password: newPassword })
       return { success: true, email, password: newPassword }
     } catch (err: unknown) {
       functions.logger.error('resetAgencyPassword error:', err)
