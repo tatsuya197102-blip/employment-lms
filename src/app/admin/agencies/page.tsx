@@ -23,6 +23,13 @@ type Agency = {
   adminEmail: string
   createdAt: string | null
 }
+type DeleteResult = {
+  success: boolean
+  companyId: string
+  companyName: string
+  deletedUsers: number
+  deletedAuthAccounts: number
+}
 
 const functions = getFunctions(app, 'asia-northeast1')
 
@@ -43,6 +50,13 @@ export default function AgenciesPage() {
   const [copied, setCopied] = useState<string | null>(null)
   const [resetting, setResetting] = useState<string | null>(null)
   const [resetResult, setResetResult] = useState<{ label: string; account: Account } | null>(null)
+
+  // 削除まわり（誤操作を防ぐため、会社名を手入力してもらってから消す）
+  const [deleteTarget, setDeleteTarget] = useState<Agency | null>(null)
+  const [deleteConfirmName, setDeleteConfirmName] = useState('')
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [deleteResult, setDeleteResult] = useState<DeleteResult | null>(null)
 
   const loadAgencies = async () => {
     try {
@@ -140,6 +154,49 @@ export default function AgenciesPage() {
       window.alert(err.message ?? '再発行に失敗しました。')
     } finally {
       setResetting(null)
+    }
+  }
+
+  const openDeleteDialog = (agency: Agency) => {
+    setDeleteTarget(agency)
+    setDeleteConfirmName('')
+    setDeleteError(null)
+    setDeleteResult(null)
+  }
+
+  const closeDeleteDialog = () => {
+    if (deleting) return
+    setDeleteTarget(null)
+    setDeleteConfirmName('')
+    setDeleteError(null)
+  }
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return
+    if (deleteConfirmName.trim() !== deleteTarget.companyName) {
+      setDeleteError('会社名が一致しません。表示されている会社名をそのまま入力してください。')
+      return
+    }
+    setDeleting(true)
+    setDeleteError(null)
+    try {
+      const call = httpsCallable<{ companyId: string; confirmName: string }, DeleteResult>(
+        functions,
+        'deleteAgency'
+      )
+      const res = await call({
+        companyId: deleteTarget.companyId,
+        confirmName: deleteConfirmName.trim(),
+      })
+      setDeleteResult(res.data)
+      setDeleteTarget(null)
+      setDeleteConfirmName('')
+      loadAgencies()
+    } catch (e) {
+      const err = e as { message?: string }
+      setDeleteError(err.message ?? '削除に失敗しました。')
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -291,6 +348,19 @@ export default function AgenciesPage() {
           </div>
         )}
 
+        {/* 削除結果 */}
+        {deleteResult && (
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
+            <p className="font-bold text-gray-800 mb-1">
+              🗑 {deleteResult.companyName} を削除しました
+            </p>
+            <p className="text-xs text-gray-500">
+              アカウント {deleteResult.deletedAuthAccounts} 件、利用者データ {deleteResult.deletedUsers} 件、
+              会社データ一式をあわせて削除しました。
+            </p>
+          </div>
+        )}
+
         {/* 発行済み一覧 */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
           <h2 className="font-bold text-gray-800 mb-4">
@@ -335,6 +405,12 @@ export default function AgenciesPage() {
                     >
                       {resetting === `${a.companyId}:learner` ? '処理中…' : '受講者PW再発行'}
                     </button>
+                    <button
+                      onClick={() => openDeleteDialog(a)}
+                      className="text-xs px-3 py-1.5 rounded-full bg-red-50 text-red-600 border border-red-100"
+                    >
+                      削除
+                    </button>
                   </div>
                 </div>
               ))}
@@ -342,6 +418,53 @@ export default function AgenciesPage() {
           )}
         </div>
       </main>
+
+      {/* 削除の確認（会社名を手入力してもらう） */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center px-4">
+          <div className="bg-white rounded-2xl shadow-lg p-6 max-w-md w-full">
+            <h3 className="font-bold text-gray-800 mb-2">代理店を削除します</h3>
+            <p className="text-sm text-gray-600 mb-1">
+              {deleteTarget.companyName}
+              <span className="font-mono text-xs text-gray-400 ml-2">{deleteTarget.companyId}</span>
+            </p>
+            <p className="text-xs text-red-600 bg-red-50 rounded-lg px-4 py-3 my-4 leading-relaxed">
+              管理者とデモ受講者のアカウント、受講記録、会社データがすべて消えます。
+              元に戻すことはできません。
+            </p>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              確認のため、会社名をそのまま入力してください
+            </label>
+            <input
+              value={deleteConfirmName}
+              onChange={e => setDeleteConfirmName(e.target.value)}
+              placeholder={deleteTarget.companyName}
+              className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-400 text-sm"
+            />
+
+            {deleteError && (
+              <p className="text-sm text-red-600 bg-red-50 rounded-lg px-4 py-3 mt-4">{deleteError}</p>
+            )}
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={closeDeleteDialog}
+                disabled={deleting}
+                className="flex-1 py-3 rounded-lg bg-gray-100 text-gray-600 font-bold disabled:opacity-50"
+              >
+                やめる
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleting || deleteConfirmName.trim() !== deleteTarget.companyName}
+                className="flex-1 py-3 rounded-lg bg-red-600 text-white font-bold disabled:opacity-40"
+              >
+                {deleting ? '削除しています…' : '削除する'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

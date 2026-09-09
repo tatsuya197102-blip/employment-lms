@@ -463,3 +463,92 @@ export const resetAgencyPassword = functions
       throw new functions.https.HttpsError('not-found', 'アカウントが見つかりませんでした。')
     }
   })
+
+// ─────────────────────────────────────────────
+// 7. 代理店の削除 Callable Function
+//    誤操作を防ぐため、会社名を手入力してもらい、一致したときだけ削除する。
+//    消すもの（発行時に作っているものの裏返し）:
+//      - 認証アカウント（管理者・デモ受講者）
+//      - userIndex/{UID}
+//      - companies/{会社ID} 配下すべて（users とその progress を含む）
+//    代理店として発行したもの（isAgency: true）以外は消せないようにしてある。
+// ─────────────────────────────────────────────
+interface DeleteAgencyData {
+  companyId: string
+  confirmName: string // 画面で手入力してもらう会社名
+}
+
+export const deleteAgency = functions
+  .region('asia-northeast1')
+  .runWith({ timeoutSeconds: 120 })
+  .https
+  .onCall(async (data: DeleteAgencyData, context) => {
+    await assertAgencyOperator(context)
+
+    const companyId   = (data.companyId ?? '').trim().toLowerCase()
+    const confirmName = (data.confirmName ?? '').trim()
+
+    if (!companyId) {
+      throw new functions.https.HttpsError('invalid-argument', '会社IDが指定されていません。')
+    }
+
+    const companyRef  = db.doc(`companies/${companyId}`)
+    const companySnap = await companyRef.get()
+    if (!companySnap.exists) {
+      throw new functions.https.HttpsError('not-found', `会社ID「${companyId}」は見つかりませんでした。`)
+    }
+
+    const companyData = companySnap.data() ?? {}
+    const companyName = String(companyData.name ?? '')
+
+    // 代理店として発行したもの以外は消させない（本番の会社を守るため）
+    if (companyData.isAgency !== true) {
+      throw new functions.https.HttpsError(
+        'permission-denied',
+        'この会社は代理店として発行されたものではないため、ここからは削除できません。'
+      )
+    }
+
+    // 会社名の手入力が一致しないと消さない
+    if (confirmName !== companyName) {
+      throw new functions.https.HttpsError(
+        'invalid-argument',
+        '入力された会社名が一致しません。削除を中止しました。'
+      )
+    }
+
+    // 配下のアカウントを集める
+    const usersSnap = await db.collection(`companies/${companyId}/users`).get()
+    const uids = usersSnap.docs.map(d => d.id)
+
+    let deletedAuth = 0
+    for (const uid of uids) {
+      try {
+        await getAuth().deleteUser(uid)
+        deletedAuth++
+      } catch (err) {
+        // すでに消えている場合はそのまま進む
+        functions.logger.warn(`deleteAgency: auth user ${uid} not deleted`, err)
+      }
+      try {
+        await db.doc(`userIndex/${uid}`).delete()
+      } catch (err) {
+        functions.logger.warn(`deleteAgency: userIndex ${uid} not deleted`, err)
+      }
+    }
+
+    // 会社ドキュメントと配下（users・その progress）をまとめて消す
+    await db.recursiveDelete(companyRef)
+
+    functions.logger.info(
+      `Agency deleted: ${companyId} (${companyName}) users=${uids.length} auth=${deletedAuth}`
+    )
+
+    return {
+      success: true,
+      companyId,
+      companyName,
+      deletedUsers: uids.length,
+      deletedAuthAccounts: deletedAuth,
+    }
+  })
