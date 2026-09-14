@@ -14,7 +14,6 @@ export default function CompanyPage() {
         <LegalRow label="代表者">代表取締役 岡本 立也</LegalRow>
         <LegalRow label="所在地">〒141-0031 東京都品川区西五反田1-24-4</LegalRow>
         <LegalRow label="設立">2022年1月25日</LegalRow>
-        <LegalRow label="資本金">5,520万円</LegalRow>
         <LegalRow label="事業内容">
           アニメーション・漫画の企画・制作
           <br />
