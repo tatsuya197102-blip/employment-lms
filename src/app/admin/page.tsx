@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { collection, getDocs } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { useAuth } from '@/contexts/AuthContext'
-import { MODULES } from '@/types/lms'
+import { CORE_MODULES, CORE_MODULE_IDS } from '@/types/lms'
 import type { LmsUser, ModuleProgress } from '@/types/lms'
 
 interface UserWithProgress {
@@ -37,7 +37,10 @@ export default function AdminDashboard() {
           const progSnap = await getDocs(
             collection(db, 'companies', lmsUser.companyId, 'users', uid, 'progress')
           )
-          const passedCount = progSnap.docs.filter(d => (d.data() as ModuleProgress).passed).length
+          // 修了判定は必修編のみを対象にする(実践編・育成就労編・支援機関編は対象外)
+          const passedCount = progSnap.docs.filter(
+            d => CORE_MODULE_IDS.includes(d.id) && (d.data() as ModuleProgress).passed
+          ).length
           return { uid, user, passedCount }
         })
       )
@@ -47,7 +50,7 @@ export default function AdminDashboard() {
     fetch()
   }, [lmsUser])
 
-  const completedUsers = users.filter(u => u.passedCount === MODULES.length)
+  const completedUsers = users.filter(u => u.passedCount === CORE_MODULES.length)
   const overallRate = users.length > 0
     ? Math.round((completedUsers.length / users.length) * 100)
     : 0
@@ -87,7 +90,7 @@ export default function AdminDashboard() {
         ) : (
           <div className="space-y-3">
             {users.slice(0, 10).map(({ uid, user, passedCount }) => {
-              const pct = Math.round((passedCount / MODULES.length) * 100)
+              const pct = Math.round((passedCount / CORE_MODULES.length) * 100)
               return (
                 <Link key={uid} href={`/admin/users/${uid}`}
                   className="flex items-center gap-4 py-2 hover:bg-gray-50 rounded-lg px-2 transition">
@@ -100,7 +103,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="w-32">
                     <div className="flex justify-between text-xs text-gray-500 mb-1">
-                      <span>{passedCount}/{MODULES.length}</span>
+                      <span>{passedCount}/{CORE_MODULES.length}</span>
                       <span>{pct}%</span>
                     </div>
                     <div className="w-full bg-gray-100 rounded-full h-1.5">

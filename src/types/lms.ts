@@ -83,4 +83,14 @@ export const MODULES: Module[] = [
   { id:'M32', title:'監査・訪問指導の実務',                   bookChapter:'支援機関編', youtubeTag:'【M32】', audience:'admin', edition:'agency' },
   { id:'M33', title:'受け入れ企業への指導と初動',             bookChapter:'支援機関編', youtubeTag:'【M33】', audience:'admin', edition:'agency' },
   { id:'M34', title:'機構への届出・報告と情報公開',           bookChapter:'支援機関編', youtubeTag:'【M34】', audience:'admin', edition:'agency' },
+  // ===== 実践編への追加(M35〜M39・全社共通) =====
+  { id:'M35', title:'安全衛生と労災防止',                     bookChapter:'管理者向け・定着支援', youtubeTag:'【M35】', audience:'admin' },
+  { id:'M36', title:'ハラスメントと人権への配慮',             bookChapter:'管理者向け・定着支援', youtubeTag:'【M36】', audience:'admin' },
+  { id:'M37', title:'住まいと生活基盤の段取り',               bookChapter:'管理者向け・定着支援', youtubeTag:'【M37】', audience:'admin' },
+  { id:'M38', title:'年末調整・国外扶養親族・脱退一時金',     bookChapter:'管理者向け・法務労務', youtubeTag:'【M38】', audience:'admin' },
+  { id:'M39', title:'監査・実地検査への備え',                 bookChapter:'管理者向け・法務労務', youtubeTag:'【M39】', audience:'admin' },
 ]
+
+/** 必修編(修了証の対象)。管理画面の修了判定もこれを分母にする */
+export const CORE_MODULES: Module[] = MODULES.filter(m => !m.audience || m.audience === 'learner')
+export const CORE_MODULE_IDS: string[] = CORE_MODULES.map(m => m.id)
