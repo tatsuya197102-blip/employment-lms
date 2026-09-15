@@ -43,6 +43,8 @@ export interface Module {
   audience?: 'learner' | 'admin'
   /** 表示する編。未指定なら audience から判定(未指定=必修編 / 'admin'=実践編) */
   edition?: Edition
+  /** true なら動画タブを出さない(冊子とクイズのみ) */
+  noVideo?: boolean
 }
 
 export const MODULES: Module[] = [
@@ -72,23 +74,23 @@ export const MODULES: Module[] = [
   { id:'M23', title:'育成就労制度への移行対応',               bookChapter:'管理者向け・法務労務', youtubeTag:'【M23】', audience:'admin' },
   { id:'M24', title:'コンプライアンスとトラブル対応',         bookChapter:'管理者向け・法務労務', youtubeTag:'【M24】', audience:'admin' },
   // ===== 育成就労編(M25〜M29・audience:'admin' は admin ロールのみ表示) =====
-  { id:'M25', title:'育成就労の全体像と経過措置',             bookChapter:'育成就労編', youtubeTag:'【M25】', audience:'admin', edition:'ikusei' },
-  { id:'M26', title:'本人意向転籍のルールと定着設計',         bookChapter:'育成就労編', youtubeTag:'【M26】', audience:'admin', edition:'ikusei' },
-  { id:'M27', title:'育成就労計画の作成と認定申請',           bookChapter:'育成就労編', youtubeTag:'【M27】', audience:'admin', edition:'ikusei' },
-  { id:'M28', title:'監理支援機関の選び方と付き合い方',       bookChapter:'育成就労編', youtubeTag:'【M28】', audience:'admin', edition:'ikusei' },
-  { id:'M29', title:'育成就労から特定技能1号への移行',        bookChapter:'育成就労編', youtubeTag:'【M29】', audience:'admin', edition:'ikusei' },
+  { id:'M25', title:'育成就労の全体像と経過措置',             bookChapter:'育成就労編', youtubeTag:'【M25】', audience:'admin', edition:'ikusei', noVideo:true },
+  { id:'M26', title:'本人意向転籍のルールと定着設計',         bookChapter:'育成就労編', youtubeTag:'【M26】', audience:'admin', edition:'ikusei', noVideo:true },
+  { id:'M27', title:'育成就労計画の作成と認定申請',           bookChapter:'育成就労編', youtubeTag:'【M27】', audience:'admin', edition:'ikusei', noVideo:true },
+  { id:'M28', title:'監理支援機関の選び方と付き合い方',       bookChapter:'育成就労編', youtubeTag:'【M28】', audience:'admin', edition:'ikusei', noVideo:true },
+  { id:'M29', title:'育成就労から特定技能1号への移行',        bookChapter:'育成就労編', youtubeTag:'【M29】', audience:'admin', edition:'ikusei', noVideo:true },
   // ===== 支援機関編(M30〜M34・支援機関向けプランの会社にのみ表示) =====
-  { id:'M30', title:'登録支援機関の支援義務10項目',           bookChapter:'支援機関編', youtubeTag:'【M30】', audience:'admin', edition:'agency' },
-  { id:'M31', title:'監理支援機関の許可要件と体制',           bookChapter:'支援機関編', youtubeTag:'【M31】', audience:'admin', edition:'agency' },
-  { id:'M32', title:'監査・訪問指導の実務',                   bookChapter:'支援機関編', youtubeTag:'【M32】', audience:'admin', edition:'agency' },
-  { id:'M33', title:'受け入れ企業への指導と初動',             bookChapter:'支援機関編', youtubeTag:'【M33】', audience:'admin', edition:'agency' },
-  { id:'M34', title:'機構への届出・報告と情報公開',           bookChapter:'支援機関編', youtubeTag:'【M34】', audience:'admin', edition:'agency' },
+  { id:'M30', title:'登録支援機関の支援義務10項目',           bookChapter:'支援機関編', youtubeTag:'【M30】', audience:'admin', edition:'agency', noVideo:true },
+  { id:'M31', title:'監理支援機関の許可要件と体制',           bookChapter:'支援機関編', youtubeTag:'【M31】', audience:'admin', edition:'agency', noVideo:true },
+  { id:'M32', title:'監査・訪問指導の実務',                   bookChapter:'支援機関編', youtubeTag:'【M32】', audience:'admin', edition:'agency', noVideo:true },
+  { id:'M33', title:'受け入れ企業への指導と初動',             bookChapter:'支援機関編', youtubeTag:'【M33】', audience:'admin', edition:'agency', noVideo:true },
+  { id:'M34', title:'機構への届出・報告と情報公開',           bookChapter:'支援機関編', youtubeTag:'【M34】', audience:'admin', edition:'agency', noVideo:true },
   // ===== 実践編への追加(M35〜M39・全社共通) =====
-  { id:'M35', title:'安全衛生と労災防止',                     bookChapter:'管理者向け・定着支援', youtubeTag:'【M35】', audience:'admin' },
-  { id:'M36', title:'ハラスメントと人権への配慮',             bookChapter:'管理者向け・定着支援', youtubeTag:'【M36】', audience:'admin' },
-  { id:'M37', title:'住まいと生活基盤の段取り',               bookChapter:'管理者向け・定着支援', youtubeTag:'【M37】', audience:'admin' },
-  { id:'M38', title:'年末調整・国外扶養親族・脱退一時金',     bookChapter:'管理者向け・法務労務', youtubeTag:'【M38】', audience:'admin' },
-  { id:'M39', title:'監査・実地検査への備え',                 bookChapter:'管理者向け・法務労務', youtubeTag:'【M39】', audience:'admin' },
+  { id:'M35', title:'安全衛生と労災防止',                     bookChapter:'管理者向け・定着支援', youtubeTag:'【M35】', audience:'admin', noVideo:true },
+  { id:'M36', title:'ハラスメントと人権への配慮',             bookChapter:'管理者向け・定着支援', youtubeTag:'【M36】', audience:'admin', noVideo:true },
+  { id:'M37', title:'住まいと生活基盤の段取り',               bookChapter:'管理者向け・定着支援', youtubeTag:'【M37】', audience:'admin', noVideo:true },
+  { id:'M38', title:'年末調整・国外扶養親族・脱退一時金',     bookChapter:'管理者向け・法務労務', youtubeTag:'【M38】', audience:'admin', noVideo:true },
+  { id:'M39', title:'監査・実地検査への備え',                 bookChapter:'管理者向け・法務労務', youtubeTag:'【M39】', audience:'admin', noVideo:true },
 ]
 
 /** 必修編(修了証の対象)。管理画面の修了判定もこれを分母にする */

@@ -13,8 +13,8 @@ const PRICING = {
   unit: '円 / 年(税別)・1社あたり',
   features: [
     '受講者向け 必修編14モジュール',
-    '実践編10モジュール(定着支援・法務労務)',
-    '確認クイズ360問・修了証発行',
+    '実践編15モジュール(定着支援・法務労務)',
+    '確認クイズ585問・修了証発行',
     '管理者ダッシュボード(進捗・修了状況の一括管理)',
     '受講アカウント発行数 無制限',
     '毎年の法改正にあわせた教材アップデート',
@@ -125,10 +125,10 @@ export default function HomePage() {
       <section className="bg-[#132B4D] text-white">
         <div className="max-w-6xl mx-auto px-6 py-20">
           <h2 className="text-center text-2xl font-bold mb-2">
-            全24モジュール<span className="text-[#C8A84B]"> — 人事部門と受け入れ現場の両方に</span>
+            全39モジュール<span className="text-[#C8A84B]"> — 人事部門と受け入れ現場の両方に</span>
           </h2>
           <p className="text-center text-sm text-white/60 mb-12">
-            必修編は人事・採用担当者の実務基礎、実践編は受け入れ現場管理職と人事・労務責任者の深掘り。各モジュールは冊子+確認クイズ15問(全360問)で構成です。
+            必修編は人事・採用担当者の実務基礎、実践編は受け入れ現場管理職と人事・労務責任者の深掘り。各モジュールは冊子+確認クイズ15問(全585問)で構成です。
           </p>
 
           <div className="grid md:grid-cols-2 gap-8">
@@ -155,7 +155,7 @@ export default function HomePage() {
               <div className="flex items-baseline justify-between mb-5">
                 <h3 className="font-bold text-lg">📗 実践編(実務の深掘り)</h3>
                 <span className="text-[#C8A84B] font-bold text-2xl">
-                  10<span className="text-sm font-normal text-white/60 ml-1">モジュール</span>
+                  15<span className="text-sm font-normal text-white/60 ml-1">モジュール</span>
                 </span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5 text-sm text-white/80">
@@ -169,6 +169,9 @@ export default function HomePage() {
                     <li>・生活支援の実務</li>
                     <li>・キャリアパスと評価・処遇</li>
                     <li>・離職予防と早期発見</li>
+                    <li>・安全衛生と労災防止</li>
+                    <li>・ハラスメントと人権への配慮</li>
+                    <li>・住まいと生活基盤の段取り</li>
                   </ul>
                 </div>
                 <div>
@@ -181,6 +184,8 @@ export default function HomePage() {
                     <li>・社会保険・税務の実務</li>
                     <li>・育成就労制度への移行対応</li>
                     <li>・コンプライアンス対応</li>
+                    <li>・年末調整・国外扶養親族・脱退一時金</li>
+                    <li>・監査・実地検査への備え</li>
                   </ul>
                 </div>
               </div>
@@ -190,8 +195,8 @@ export default function HomePage() {
           {/* 数字 */}
           <div className="grid grid-cols-3 gap-4 mt-10 max-w-2xl mx-auto text-center">
             {[
-              { n: '24', l: 'モジュール' },
-              { n: '360', l: 'クイズ問題' },
+              { n: '39', l: 'モジュール' },
+              { n: '585', l: 'クイズ問題' },
               { n: '100%', l: 'クラウド完結' },
             ].map((s) => (
               <div key={s.l}>

@@ -23,6 +23,12 @@ export function useYouTubeVideos(moduleId: string) {
   const [loading, setLoading]   = useState(true)
 
   useEffect(() => {
+    // moduleId が空文字のときは動画なしのモジュール。通信そのものを行わない
+    if (!moduleId) {
+      setVideoIds([])
+      setLoading(false)
+      return
+    }
     fetchVideoMap().then(map => {
       setVideoIds(map[moduleId] ?? [])
       setLoading(false)

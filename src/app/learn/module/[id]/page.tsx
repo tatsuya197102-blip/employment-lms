@@ -18,19 +18,23 @@ type Tab = 'video' | 'book' | 'quiz'
 
 export default function ModulePage() {
   const { id } = useParams<{ id: string }>()
-const { user, lmsUser, loading: authLoading } = useAuth()
+  const { user, lmsUser, loading: authLoading, editions } = useAuth()
   const router = useRouter()
   const mod = MODULES.find(m => m.id === id)
-  const accessDenied = mod?.audience === 'admin' && lmsUser?.role !== 'admin'
+  const roleDenied = mod?.audience === 'admin' && lmsUser?.role !== 'admin'
+  // 会社に許可されていない編は、URLを直接入力しても開けない
+  const editionDenied = !!mod?.edition && !editions.includes(mod.edition)
+  const accessDenied = roleDenied || editionDenied
   useEffect(() => { if (accessDenied) router.replace('/learn') }, [accessDenied, router])
 
   const [progress, setProgress] = useState<ModuleProgress | null>(null)
   const [questions, setQuestions] = useState<QuizQuestion[]>([])
-  const [tab, setTab] = useState<Tab>('video')
+  const hasVideo = !mod?.noVideo
+  const [tab, setTab] = useState<Tab>(mod?.noVideo ? 'book' : 'video')
   const [loading, setLoading] = useState(true)
   const [videoIdx, setVideoIdx] = useState(0)
 
-  const { videoIds, loading: ytLoading } = useYouTubeVideos(id)
+  const { videoIds, loading: ytLoading } = useYouTubeVideos(hasVideo ? id : '')
 
   useEffect(() => {
     if (!mod) { router.replace('/learn'); return }
@@ -79,7 +83,9 @@ if (authLoading) return
   const prevMod = modIndex > 0 ? MODULES[modIndex - 1] : null
   const nextMod = modIndex < MODULES.length - 1 ? MODULES[modIndex + 1] : null
   const tabs: { key: Tab; label: string; done: boolean }[] = [
-    { key: 'video', label: '動画',   done: !!progress?.videoWatched },
+    ...(hasVideo
+      ? [{ key: 'video' as Tab, label: '動画', done: !!progress?.videoWatched }]
+      : []),
     { key: 'book',  label: '冊子',   done: !!progress?.bookCompleted },
     { key: 'quiz',  label: 'クイズ', done: !!progress?.passed },
   ]
@@ -112,7 +118,7 @@ if (authLoading) return
       </div>
 
       <main className="max-w-6xl mx-auto px-4 py-6">
-        {tab === 'video' && (
+        {hasVideo && tab === 'video' && (
           <div className="space-y-4">
             {ytLoading ? (
               <div className="aspect-video bg-gray-100 rounded-xl flex items-center justify-center">
