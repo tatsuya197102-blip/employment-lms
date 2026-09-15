@@ -398,8 +398,8 @@ export default function LearnDashboard() {
         {/* 必修編(M1〜M14) */}
         <h2 className="text-base font-bold text-gray-700 mb-3">📘 必修編</h2>
         <div className="space-y-3">
-          {coreModules.map((mod, idx) => (
-            <ModuleCard key={mod.id} mod={mod} displayNo={idx + 1} />
+          {coreModules.map((mod) => (
+            <ModuleCard key={mod.id} mod={mod} displayNo={Number(mod.id.slice(1))} />
           ))}
         </div>
 
@@ -411,8 +411,8 @@ export default function LearnDashboard() {
               {practiceModules.length} 合格
             </p>
             <div className="space-y-3">
-              {practiceModules.map((mod, idx) => (
-                <ModuleCard key={mod.id} mod={mod} displayNo={idx + 15} />
+              {practiceModules.map((mod) => (
+                <ModuleCard key={mod.id} mod={mod} displayNo={Number(mod.id.slice(1))} />
               ))}
             </div>
           </>
@@ -426,8 +426,8 @@ export default function LearnDashboard() {
               {ikuseiModules.length} 合格
             </p>
             <div className="space-y-3">
-              {ikuseiModules.map((mod, idx) => (
-                <ModuleCard key={mod.id} mod={mod} displayNo={idx + 25} />
+              {ikuseiModules.map((mod) => (
+                <ModuleCard key={mod.id} mod={mod} displayNo={Number(mod.id.slice(1))} />
               ))}
             </div>
           </>
@@ -441,8 +441,8 @@ export default function LearnDashboard() {
               {agencyModules.length} 合格
             </p>
             <div className="space-y-3">
-              {agencyModules.map((mod, idx) => (
-                <ModuleCard key={mod.id} mod={mod} displayNo={idx + 30} />
+              {agencyModules.map((mod) => (
+                <ModuleCard key={mod.id} mod={mod} displayNo={Number(mod.id.slice(1))} />
               ))}
             </div>
           </>

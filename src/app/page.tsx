@@ -14,7 +14,8 @@ const PRICING = {
   features: [
     '受講者向け 必修編14モジュール',
     '実践編15モジュール(定着支援・法務労務)',
-    '確認クイズ585問・修了証発行',
+    '育成就労編5モジュール(2027年4月施行の新制度対応)',
+    '確認クイズ510問・修了証発行',
     '管理者ダッシュボード(進捗・修了状況の一括管理)',
     '受講アカウント発行数 無制限',
     '毎年の法改正にあわせた教材アップデート',
@@ -125,10 +126,10 @@ export default function HomePage() {
       <section className="bg-[#132B4D] text-white">
         <div className="max-w-6xl mx-auto px-6 py-20">
           <h2 className="text-center text-2xl font-bold mb-2">
-            全39モジュール<span className="text-[#C8A84B]"> — 人事部門と受け入れ現場の両方に</span>
+            全34モジュール<span className="text-[#C8A84B]"> — 人事部門と受け入れ現場の両方に</span>
           </h2>
           <p className="text-center text-sm text-white/60 mb-12">
-            必修編は人事・採用担当者の実務基礎、実践編は受け入れ現場管理職と人事・労務責任者の深掘り。各モジュールは冊子+確認クイズ15問(全585問)で構成です。
+            必修編は人事・採用担当者の実務基礎、実践編は受け入れ現場管理職と人事・労務責任者の深掘り、育成就労編は2027年4月施行の新制度への対応。各モジュールは冊子+確認クイズ15問(全510問)で構成です。
           </p>
 
           <div className="grid md:grid-cols-2 gap-8">
@@ -190,13 +191,37 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
+
+            {/* 育成就労編 */}
+            <div className="bg-white/5 rounded-xl border border-white/10 p-7 md:col-span-2">
+              <div className="flex items-baseline justify-between mb-2">
+                <h3 className="font-bold text-lg">📕 育成就労編(2027年4月施行の新制度)</h3>
+                <span className="text-[#C8A84B] font-bold text-2xl">
+                  5<span className="text-sm font-normal text-white/60 ml-1">モジュール</span>
+                </span>
+              </div>
+              <p className="text-sm text-white/60 mb-5 leading-relaxed">
+                技能実習は2027年4月に廃止され、育成就労制度に切り替わります。転籍のルール、育成就労計画の認定申請、監理支援機関の選び直しなど、施行までに決めておくべき実務を分野別の最新ルールにあわせて解説します。制度の改正にあわせて随時更新します。
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5 text-sm text-white/80">
+                <ul className="space-y-2">
+                  <li>・育成就労の全体像と経過措置</li>
+                  <li>・本人意向転籍のルールと定着設計</li>
+                  <li>・育成就労計画の作成と認定申請</li>
+                </ul>
+                <ul className="space-y-2">
+                  <li>・監理支援機関の選び方と付き合い方</li>
+                  <li>・育成就労から特定技能1号への移行</li>
+                </ul>
+              </div>
+            </div>
           </div>
 
           {/* 数字 */}
           <div className="grid grid-cols-3 gap-4 mt-10 max-w-2xl mx-auto text-center">
             {[
-              { n: '39', l: 'モジュール' },
-              { n: '585', l: 'クイズ問題' },
+              { n: '34', l: 'モジュール' },
+              { n: '510', l: 'クイズ問題' },
               { n: '100%', l: 'クラウド完結' },
             ].map((s) => (
               <div key={s.l}>
