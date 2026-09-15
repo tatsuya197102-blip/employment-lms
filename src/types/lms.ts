@@ -5,6 +5,27 @@ export interface LmsUser {
   email: string; displayName: string; role: UserRole; companyId: string
   invitedAt: Date; lastLoginAt?: Date; completed?: boolean; completedAt?: Date
 }
+
+/**
+ * 会社ごとに「どの編を見せるか」。companies/{companyId} の editions に入れる。
+ * 項目が無い会社は DEFAULT_EDITIONS(必修編・実践編・育成就労編)として扱うので、
+ * 既存の会社データを書き換える作業は不要。
+ */
+export const DEFAULT_EDITIONS: Edition[] = ['core', 'practice', 'ikusei']
+
+export function resolveEditions(raw?: unknown): Edition[] {
+  if (!Array.isArray(raw) || raw.length === 0) return DEFAULT_EDITIONS
+  const allowed: Edition[] = ['core', 'practice', 'ikusei', 'agency']
+  const picked = raw.filter((e): e is Edition => allowed.includes(e as Edition))
+  return picked.length ? picked : DEFAULT_EDITIONS
+}
+
+export const EDITION_LABELS: Record<Edition, string> = {
+  core:     '必修編',
+  practice: '実践編(人事マネジメント)',
+  ikusei:   '育成就労編',
+  agency:   '支援機関編',
+}
 export interface QuizAttempt {
   score: number; passed: boolean; answeredAt: Date; questions: string[]
 }
@@ -56,4 +77,10 @@ export const MODULES: Module[] = [
   { id:'M27', title:'育成就労計画の作成と認定申請',           bookChapter:'育成就労編', youtubeTag:'【M27】', audience:'admin', edition:'ikusei' },
   { id:'M28', title:'監理支援機関の選び方と付き合い方',       bookChapter:'育成就労編', youtubeTag:'【M28】', audience:'admin', edition:'ikusei' },
   { id:'M29', title:'育成就労から特定技能1号への移行',        bookChapter:'育成就労編', youtubeTag:'【M29】', audience:'admin', edition:'ikusei' },
+  // ===== 支援機関編(M30〜M34・支援機関向けプランの会社にのみ表示) =====
+  { id:'M30', title:'登録支援機関の支援義務10項目',           bookChapter:'支援機関編', youtubeTag:'【M30】', audience:'admin', edition:'agency' },
+  { id:'M31', title:'監理支援機関の許可要件と体制',           bookChapter:'支援機関編', youtubeTag:'【M31】', audience:'admin', edition:'agency' },
+  { id:'M32', title:'監査・訪問指導の実務',                   bookChapter:'支援機関編', youtubeTag:'【M32】', audience:'admin', edition:'agency' },
+  { id:'M33', title:'受け入れ企業への指導と初動',             bookChapter:'支援機関編', youtubeTag:'【M33】', audience:'admin', edition:'agency' },
+  { id:'M34', title:'機構への届出・報告と情報公開',           bookChapter:'支援機関編', youtubeTag:'【M34】', audience:'admin', edition:'agency' },
 ]

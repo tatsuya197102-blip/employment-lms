@@ -13,15 +13,22 @@ type ProgressMap = Record<string, ModuleProgress | null>
 type Status = 'notStarted' | 'inProgress' | 'passed'
 
 export default function LearnDashboard() {
-  const { user, lmsUser, signOut, loading: authLoading } = useAuth()
+  const { user, lmsUser, editions, signOut, loading: authLoading } = useAuth()
   const visibleModules = MODULES.filter(m => !m.audience || m.audience === 'learner' || lmsUser?.role === 'admin')
   const coreModules = visibleModules.filter(m => !m.audience || m.audience === 'learner')
   const practiceModules = visibleModules.filter(m => m.audience === 'admin' && !m.edition)
-  const ikuseiModules = visibleModules.filter(m => m.edition === 'ikusei')
+  const ikuseiModules = editions.includes('ikusei')
+    ? visibleModules.filter(m => m.edition === 'ikusei')
+    : []
+  const agencyModules = editions.includes('agency')
+    ? visibleModules.filter(m => m.edition === 'agency')
+    : []
   const [progressMap, setProgressMap] = useState<ProgressMap>({})
   const practicePassed = practiceModules.filter(m => progressMap[m.id]?.passed).length
   const ikuseiPassed = ikuseiModules.filter(m => progressMap[m.id]?.passed).length
   const ikuseiPct = ikuseiModules.length ? Math.round((ikuseiPassed / ikuseiModules.length) * 100) : 0
+  const agencyPassed = agencyModules.filter(m => progressMap[m.id]?.passed).length
+  const agencyPct = agencyModules.length ? Math.round((agencyPassed / agencyModules.length) * 100) : 0
   const [loading, setLoading] = useState(true)
   const [accountMissing, setAccountMissing] = useState(false)
 
@@ -214,6 +221,17 @@ export default function LearnDashboard() {
                   </span>
                 </div>
               )}
+              {agencyModules.length > 0 && (
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-gray-500 w-24 shrink-0">📙 支援機関編</span>
+                  <div className="flex-1 bg-gray-100 rounded-full h-2">
+                    <div className="bg-[#2E5A4A] h-2 rounded-full" style={{ width: `${agencyPct}%` }} />
+                  </div>
+                  <span className="text-xs font-semibold text-[#2E5A4A] w-16 text-right">
+                    {agencyPassed}/{agencyModules.length} 合格
+                  </span>
+                </div>
+              )}
             </div>
           )}
 
@@ -356,6 +374,17 @@ export default function LearnDashboard() {
                   </span>
                 </div>
               )}
+              {agencyModules.length > 0 && (
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-gray-500 w-24 shrink-0">📙 支援機関編</span>
+                  <div className="flex-1 bg-gray-100 rounded-full h-2">
+                    <div className="bg-[#2E5A4A] h-2 rounded-full" style={{ width: `${agencyPct}%` }} />
+                  </div>
+                  <span className="text-xs font-semibold text-[#2E5A4A] w-16 text-right">
+                    {agencyPassed}/{agencyModules.length} 合格
+                  </span>
+                </div>
+              )}
             </div>
           )}
 
@@ -399,6 +428,21 @@ export default function LearnDashboard() {
             <div className="space-y-3">
               {ikuseiModules.map((mod, idx) => (
                 <ModuleCard key={mod.id} mod={mod} displayNo={idx + 25} />
+              ))}
+            </div>
+          </>
+        )}
+
+        {agencyModules.length > 0 && (
+          <>
+            <h2 className="text-base font-bold text-gray-700 mt-8 mb-1">📙 支援機関編</h2>
+            <p className="text-xs text-gray-400 mb-3">
+              登録支援機関・監理支援機関の実務コース(動画なし・修了証の対象外)| {agencyPassed} /{' '}
+              {agencyModules.length} 合格
+            </p>
+            <div className="space-y-3">
+              {agencyModules.map((mod, idx) => (
+                <ModuleCard key={mod.id} mod={mod} displayNo={idx + 30} />
               ))}
             </div>
           </>

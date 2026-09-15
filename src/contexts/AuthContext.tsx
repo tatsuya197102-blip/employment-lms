@@ -8,7 +8,8 @@ import {
 } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
 import { auth, db } from '@/lib/firebase'
-import type { LmsUser } from '@/types/lms'
+import type { LmsUser, Edition } from '@/types/lms'
+import { DEFAULT_EDITIONS, resolveEditions } from '@/types/lms'
 
 /**
  * v2 (2026-08-11): スマホでログイン後にスピナーが回り続ける問題への対策。
@@ -44,6 +45,8 @@ function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise
 interface AuthState {
   user: User | null
   lmsUser: LmsUser | null
+  /** この会社に見せる編。会社ドキュメントに指定が無ければ既定値 */
+  editions: Edition[]
   loading: boolean
   signIn: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
@@ -52,6 +55,7 @@ interface AuthState {
 const AuthContext = createContext<AuthState>({
   user: null,
   lmsUser: null,
+  editions: DEFAULT_EDITIONS,
   loading: true,
   signIn: async () => {},
   signOut: async () => {},
@@ -60,6 +64,7 @@ const AuthContext = createContext<AuthState>({
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [lmsUser, setLmsUser] = useState<LmsUser | null>(null)
+  const [editions, setEditions] = useState<Edition[]>(DEFAULT_EDITIONS)
   const [loading, setLoading] = useState(true)
   const mounted = useRef(true)
 
@@ -95,6 +100,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (userSnap.exists() && mounted.current) {
               setLmsUser({ ...(userSnap.data() as LmsUser), companyId })
             }
+            // 会社ごとの「見せる編」。読めなくても既定値のまま先へ進む
+            try {
+              const companySnap = await withTimeout(
+                getDoc(doc(db, 'companies', companyId)),
+                LMSUSER_TIMEOUT_MS,
+                'companies',
+              )
+              if (mounted.current) {
+                const raw = companySnap.exists()
+                  ? (companySnap.data() as { editions?: unknown }).editions
+                  : undefined
+                setEditions(resolveEditions(raw))
+              }
+            } catch {
+              if (mounted.current) setEditions(DEFAULT_EDITIONS)
+            }
           }
         } catch (e) {
           if (e instanceof TimeoutError) {
@@ -105,6 +126,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       } else if (mounted.current) {
         setLmsUser(null)
+        setEditions(DEFAULT_EDITIONS)
       }
 
       if (mounted.current) {
@@ -127,10 +149,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     await firebaseSignOut(auth)
     setLmsUser(null)
+    setEditions(DEFAULT_EDITIONS)
   }
 
   return (
-    <AuthContext.Provider value={{ user, lmsUser, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, lmsUser, editions, loading, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   )
