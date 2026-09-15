@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { doc, getDoc, collection, getDocs } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { useAuth } from '@/contexts/AuthContext'
-import { MODULES } from '@/types/lms'
+import { MODULES, CORE_MODULES, CORE_MODULE_IDS } from '@/types/lms'
 import type { LmsUser, ModuleProgress, QuizAttempt } from '@/types/lms'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 
@@ -52,8 +52,9 @@ export default function AdminUserDetailPage() {
   if (loading) return <LoadingSpinner />
   if (!user)   return <div className="p-8 text-gray-500">ユーザーが見つかりません。</div>
 
-  const passedCount = rows.filter(r => r.progress?.passed).length
-  const pct = Math.round(passedCount / MODULES.length * 100)
+  // 修了率は必修編のみで計算する(実践編・育成就労編・支援機関編は修了証の対象外)
+  const passedCount = rows.filter(r => CORE_MODULE_IDS.includes(r.moduleId) && r.progress?.passed).length
+  const pct = Math.round(passedCount / CORE_MODULES.length * 100)
 
   return (
     <div className="p-8">
@@ -76,7 +77,7 @@ export default function AdminUserDetailPage() {
           </div>
           <div className="text-right">
             <p className="text-3xl font-bold text-primary">{pct}%</p>
-            <p className="text-sm text-gray-500">{passedCount}/{MODULES.length} 合格</p>
+            <p className="text-sm text-gray-500">{passedCount}/{CORE_MODULES.length} 合格(必修編)</p>
           </div>
         </div>
         <div className="mt-4 w-full bg-gray-100 rounded-full h-2">
