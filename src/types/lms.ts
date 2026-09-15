@@ -16,7 +16,13 @@ export interface QuizQuestion {
   id: string; text: string; options: string[]; correctIndex: number; explanation: string
 }
 export interface QuizBank { moduleId: string; title: string; questions: QuizQuestion[] }
-export interface Module { id: string; title: string; bookChapter: string; youtubeTag: string; audience?: 'learner' | 'admin' }
+export type Edition = 'core' | 'practice' | 'ikusei' | 'agency'
+export interface Module {
+  id: string; title: string; bookChapter: string; youtubeTag: string
+  audience?: 'learner' | 'admin'
+  /** 表示する編。未指定なら audience から判定(未指定=必修編 / 'admin'=実践編) */
+  edition?: Edition
+}
 
 export const MODULES: Module[] = [
   { id:'M1',  title:'外国人雇用の基本と心構え',         bookChapter:'第3章',                 youtubeTag:'【M1】' },
@@ -44,4 +50,10 @@ export const MODULES: Module[] = [
   { id:'M22', title:'社会保険・税務の実務',                   bookChapter:'管理者向け・法務労務', youtubeTag:'【M22】', audience:'admin' },
   { id:'M23', title:'育成就労制度への移行対応',               bookChapter:'管理者向け・法務労務', youtubeTag:'【M23】', audience:'admin' },
   { id:'M24', title:'コンプライアンスとトラブル対応',         bookChapter:'管理者向け・法務労務', youtubeTag:'【M24】', audience:'admin' },
+  // ===== 育成就労編(M25〜M29・audience:'admin' は admin ロールのみ表示) =====
+  { id:'M25', title:'育成就労の全体像と経過措置',             bookChapter:'育成就労編', youtubeTag:'【M25】', audience:'admin', edition:'ikusei' },
+  { id:'M26', title:'本人意向転籍のルールと定着設計',         bookChapter:'育成就労編', youtubeTag:'【M26】', audience:'admin', edition:'ikusei' },
+  { id:'M27', title:'育成就労計画の作成と認定申請',           bookChapter:'育成就労編', youtubeTag:'【M27】', audience:'admin', edition:'ikusei' },
+  { id:'M28', title:'監理支援機関の選び方と付き合い方',       bookChapter:'育成就労編', youtubeTag:'【M28】', audience:'admin', edition:'ikusei' },
+  { id:'M29', title:'育成就労から特定技能1号への移行',        bookChapter:'育成就労編', youtubeTag:'【M29】', audience:'admin', edition:'ikusei' },
 ]

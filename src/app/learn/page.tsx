@@ -16,9 +16,12 @@ export default function LearnDashboard() {
   const { user, lmsUser, signOut, loading: authLoading } = useAuth()
   const visibleModules = MODULES.filter(m => !m.audience || m.audience === 'learner' || lmsUser?.role === 'admin')
   const coreModules = visibleModules.filter(m => !m.audience || m.audience === 'learner')
-  const practiceModules = visibleModules.filter(m => m.audience === 'admin')
+  const practiceModules = visibleModules.filter(m => m.audience === 'admin' && !m.edition)
+  const ikuseiModules = visibleModules.filter(m => m.edition === 'ikusei')
   const [progressMap, setProgressMap] = useState<ProgressMap>({})
   const practicePassed = practiceModules.filter(m => progressMap[m.id]?.passed).length
+  const ikuseiPassed = ikuseiModules.filter(m => progressMap[m.id]?.passed).length
+  const ikuseiPct = ikuseiModules.length ? Math.round((ikuseiPassed / ikuseiModules.length) * 100) : 0
   const [loading, setLoading] = useState(true)
   const [accountMissing, setAccountMissing] = useState(false)
 
@@ -200,6 +203,17 @@ export default function LearnDashboard() {
                   {practicePassed}/{practiceModules.length} 合格
                 </span>
               </div>
+              {ikuseiModules.length > 0 && (
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-gray-500 w-24 shrink-0">📕 育成就労編</span>
+                  <div className="flex-1 bg-gray-100 rounded-full h-2">
+                    <div className="bg-[#7A2E2E] h-2 rounded-full" style={{ width: `${ikuseiPct}%` }} />
+                  </div>
+                  <span className="text-xs font-semibold text-[#7A2E2E] w-16 text-right">
+                    {ikuseiPassed}/{ikuseiModules.length} 合格
+                  </span>
+                </div>
+              )}
             </div>
           )}
 
@@ -331,6 +345,17 @@ export default function LearnDashboard() {
                   {practicePassed}/{practiceModules.length} 合格
                 </span>
               </div>
+              {ikuseiModules.length > 0 && (
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-gray-500 w-24 shrink-0">📕 育成就労編</span>
+                  <div className="flex-1 bg-gray-100 rounded-full h-2">
+                    <div className="bg-[#7A2E2E] h-2 rounded-full" style={{ width: `${ikuseiPct}%` }} />
+                  </div>
+                  <span className="text-xs font-semibold text-[#7A2E2E] w-16 text-right">
+                    {ikuseiPassed}/{ikuseiModules.length} 合格
+                  </span>
+                </div>
+              )}
             </div>
           )}
 
@@ -359,6 +384,21 @@ export default function LearnDashboard() {
             <div className="space-y-3">
               {practiceModules.map((mod, idx) => (
                 <ModuleCard key={mod.id} mod={mod} displayNo={idx + 15} />
+              ))}
+            </div>
+          </>
+        )}
+
+        {ikuseiModules.length > 0 && (
+          <>
+            <h2 className="text-base font-bold text-gray-700 mt-8 mb-1">📕 育成就労編</h2>
+            <p className="text-xs text-gray-400 mb-3">
+              2027年4月施行の育成就労制度に対応した実務コース(動画なし・修了証の対象外)| {ikuseiPassed} /{' '}
+              {ikuseiModules.length} 合格
+            </p>
+            <div className="space-y-3">
+              {ikuseiModules.map((mod, idx) => (
+                <ModuleCard key={mod.id} mod={mod} displayNo={idx + 25} />
               ))}
             </div>
           </>
