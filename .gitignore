@@ -38,7 +38,9 @@ functions/lib/
 firebase-debug.log
 firebase-debug.*.log
 
-# Firebase ƒT[ƒrƒXƒAƒJƒEƒ“ƒgŒ®(â‘Î‚ÉƒRƒ~ƒbƒg‚µ‚È‚¢)
+# Firebase ï¿½Tï¿½[ï¿½rï¿½Xï¿½Aï¿½Jï¿½Eï¿½ï¿½ï¿½gï¿½ï¿½(ï¿½ï¿½Î‚ÉƒRï¿½~ï¿½bï¿½gï¿½ï¿½ï¿½È‚ï¿½)
 scripts/fbkey.json
 scripts/*firebase-adminsdk*.json
 *-firebase-adminsdk-*.json
+.vercel
+.env*
