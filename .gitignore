@@ -44,3 +44,4 @@ scripts/*firebase-adminsdk*.json
 *-firebase-adminsdk-*.json
 .vercel
 .env*
+functions/.env

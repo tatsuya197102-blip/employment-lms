@@ -552,3 +552,85 @@ export const deleteAgency = functions
       deletedAuthAccounts: deletedAuth,
     }
   })
+
+
+// ─────────────────────────────────────────────
+// 9. 会社ごとの停止・再開(GWLのクライアント台帳から呼ぶ)  [HR_LINK_V1]
+//    2026-09-23 決定: 雇用LMSの停止・再開もGWLと同じく自動にする。
+//    GWL(learn.globalworkforce.jp)の台帳で「停止・再開・解約」したとき、
+//    および毎朝の定時処理でトライアル切れ・契約満了未入金を自動停止したときに、
+//    GWLのサーバーからこの関数が呼ばれ、雇用LMS側の同じ会社も止める・戻す。
+//
+//    呼び出し: POST  本文 { "companyId": "abc-care", "suspend": true }
+//              見出し x-gwl-link-secret: <合言葉>
+//    合言葉は functions/.env の GWL_LINK_SECRET(GitHubには上げない)。
+//    GWL側は Vercel の環境変数 HR_LINK_SECRET に同じ値を入れる。
+//
+//    やること: companies/{会社ID}/users 全員の認証アカウントを無効化(停止)/有効化(再開)し、
+//              companies/{会社ID} に status: 'suspended' | 'active' を記録する。
+//              学習の記録・修了証は消さない。
+//    守り:     運営会社(reeben)は止められない。存在しない会社IDはエラー。
+// ─────────────────────────────────────────────
+const HR_LINK_PROTECTED = ['reeben']
+
+export const setCompanySuspended = functions
+  .region('asia-northeast1')
+  .runWith({ timeoutSeconds: 120 })
+  .https
+  .onRequest(async (req, res) => {
+    if (req.method !== 'POST') {
+      res.status(405).json({ error: 'method_not_allowed' })
+      return
+    }
+    const secret = process.env.GWL_LINK_SECRET || ''
+    const given = String(req.get('x-gwl-link-secret') || '')
+    if (!secret || given !== secret) {
+      res.status(401).json({ error: 'unauthorized' })
+      return
+    }
+
+    const body = (typeof req.body === 'object' && req.body) ? req.body : {}
+    const companyId = String(body.companyId ?? '').trim().toLowerCase()
+    const suspend = body.suspend === true
+    if (!/^[a-z0-9-]{2,40}$/.test(companyId)) {
+      res.status(400).json({ error: 'invalid_company_id' })
+      return
+    }
+    if (HR_LINK_PROTECTED.includes(companyId)) {
+      res.status(403).json({ error: 'protected_company' })
+      return
+    }
+
+    const companyRef = db.doc(`companies/${companyId}`)
+    const companySnap = await companyRef.get()
+    if (!companySnap.exists) {
+      res.status(404).json({ error: 'company_not_found', companyId })
+      return
+    }
+
+    const usersSnap = await db.collection(`companies/${companyId}/users`).get()
+    const uids = usersSnap.docs.map(d => d.id)
+    const failed: string[] = []
+    const CHUNK = 20
+    for (let i = 0; i < uids.length; i += CHUNK) {
+      await Promise.all(uids.slice(i, i + CHUNK).map(async uid => {
+        try {
+          await getAuth().updateUser(uid, { disabled: suspend })
+          if (suspend) await getAuth().revokeRefreshTokens(uid)
+        } catch (err) {
+          functions.logger.warn(`setCompanySuspended: ${uid} not updated`, err)
+          failed.push(uid)
+        }
+      }))
+    }
+
+    await companyRef.set(
+      suspend
+        ? { status: 'suspended', suspendedAt: FieldValue.serverTimestamp(), suspendedBy: 'gwl' }
+        : { status: 'active', suspendedAt: null, resumedAt: FieldValue.serverTimestamp() },
+      { merge: true }
+    )
+
+    functions.logger.info(`setCompanySuspended: ${companyId} suspend=${suspend} users=${uids.length} failed=${failed.length}`)
+    res.json({ ok: true, companyId, suspend, total: uids.length, changed: uids.length - failed.length, failed })
+  })
