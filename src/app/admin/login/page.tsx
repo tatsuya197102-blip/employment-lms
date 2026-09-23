@@ -20,8 +20,8 @@ export default function AdminLoginPage() {
     try {
       await signIn(email, password)
       router.push('/admin')
-    } catch {
-      setError('メールアドレスまたはパスワードが正しくありません。')
+    } catch (err) {
+      setError((err as { code?: string })?.code === 'auth/user-disabled' ? 'ご契約の状況により、ご利用が一時停止されています。ご契約時のご案内窓口までお問い合わせください。' : 'メールアドレスまたはパスワードが正しくありません。') // [HR_LINK_V1.2] 会社ごと停止されている場合は理由を表示
     } finally {
       setLoading(false)
     }

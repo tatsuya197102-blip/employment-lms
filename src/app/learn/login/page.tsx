@@ -20,8 +20,8 @@ export default function LearnLoginPage() {
     try {
       await signIn(email, password)
       router.push('/learn')
-    } catch {
-      setError('メールアドレスまたはパスワードが正しくありません。')
+    } catch (err) {
+      setError((err as { code?: string })?.code === 'auth/user-disabled' ? 'ご利用が一時停止されています。貴社のご担当者様にお問い合わせください。' : 'メールアドレスまたはパスワードが正しくありません。') // [HR_LINK_V1.2] 会社ごと停止されている場合は理由を表示
     } finally {
       setLoading(false)
     }
