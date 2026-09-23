@@ -663,3 +663,88 @@ export const listCompanies = functions
     }).sort((a, b) => a.name.localeCompare(b.name, 'ja'))
     res.json({ ok: true, companies })
   })
+
+
+// ─────────────────────────────────────────────
+// 11. 契約企業の発行(GWLのクライアント台帳から呼ぶ)  [HR_LINK_V3]
+//     2026-09-23 決定: 雇用LMSもGWLと進め方は同じ(問い合わせ→説明→トライアル→契約)。
+//     台帳で「トライアル用アカウントを発行」または「本契約に切り替える」を押したとき、
+//     商品が「雇用LMS」「セット」なら、GWLのサーバーからこの関数が呼ばれ、
+//     雇用LMS側に会社と管理者アカウントを作る(代理店扱いにはしない)。
+//
+//     呼び出し: POST 本文 { companyId, companyName, adminEmail, password }
+//               見出し x-gwl-link-secret: <合言葉>(9. と同じ)
+//     adminEmail が空、または既に使われているときは admin@{会社ID}.demo-gwl.jp にする。
+//     password は GWL 側で作ったものを使う(GWLと雇用LMSでログイン情報をそろえるため)。
+//     既に同じ会社IDがあれば作らずに 409 を返す(二重作成の防止)。
+// ─────────────────────────────────────────────
+export const createClientCompany = functions
+  .region('asia-northeast1')
+  .runWith({ timeoutSeconds: 60 })
+  .https
+  .onRequest(async (req, res) => {
+    if (req.method !== 'POST') { res.status(405).json({ error: 'method_not_allowed' }); return }
+    const secret = process.env.GWL_LINK_SECRET || ''
+    if (!secret || String(req.get('x-gwl-link-secret') || '') !== secret) {
+      res.status(401).json({ error: 'unauthorized' }); return
+    }
+    const body = (typeof req.body === 'object' && req.body) ? req.body : {}
+    const companyId = String(body.companyId ?? '').trim().toLowerCase()
+    const companyName = String(body.companyName ?? '').trim()
+    let adminEmail = String(body.adminEmail ?? '').trim().toLowerCase()
+    const password = String(body.password ?? '')
+    if (!/^[a-z0-9-]{2,40}$/.test(companyId)) { res.status(400).json({ error: 'invalid_company_id' }); return }
+    if (!companyName) { res.status(400).json({ error: 'company_name_required' }); return }
+    if (password.length < 8) { res.status(400).json({ error: 'password_too_short' }); return }
+    if (HR_LINK_PROTECTED.includes(companyId)) { res.status(403).json({ error: 'protected_company' }); return }
+
+    const companyRef = db.doc(`companies/${companyId}`)
+    if ((await companyRef.get()).exists) {
+      res.status(409).json({ error: 'company_exists', companyId }); return
+    }
+
+    // ログインID: 担当者メールが未使用ならそれ、使われていれば自動のID
+    if (adminEmail) {
+      try { await getAuth().getUserByEmail(adminEmail); adminEmail = '' } catch { /* 未使用 */ }
+    }
+    if (!adminEmail) adminEmail = `admin@${companyId}.${AGENCY_MAIL_DOMAIN}`
+
+    let uid = ''
+    try {
+      await companyRef.set({
+        name: companyName,
+        adminEmail,
+        plan: 'client',
+        isAgency: false,
+        status: 'active',
+        createdBy: 'gwl',
+        createdAt: FieldValue.serverTimestamp(),
+      })
+      const rec = await getAuth().createUser({
+        email: adminEmail,
+        displayName: `${companyName} 管理者`,
+        password,
+        emailVerified: false,
+      })
+      uid = rec.uid
+      await db.doc(`companies/${companyId}/users/${uid}`).set({
+        email: adminEmail,
+        displayName: `${companyName} 管理者`,
+        role: 'admin',
+        companyId,
+        invitedAt: FieldValue.serverTimestamp(),
+      })
+      await db.doc(`userIndex/${uid}`).set({ companyId })
+      functions.logger.info(`createClientCompany: ${companyId} (${companyName}) admin=${adminEmail}`)
+      res.json({ ok: true, companyId, adminEmail })
+    } catch (err) {
+      // 途中で失敗したら作ったものを消す
+      if (uid) {
+        try { await getAuth().deleteUser(uid) } catch { /* 続行 */ }
+        try { await db.doc(`userIndex/${uid}`).delete() } catch { /* 続行 */ }
+      }
+      try { await db.recursiveDelete(companyRef) } catch { /* 続行 */ }
+      functions.logger.error('createClientCompany failed', err)
+      res.status(500).json({ error: 'create_failed', message: err instanceof Error ? err.message : String(err) })
+    }
+  })
