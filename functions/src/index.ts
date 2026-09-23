@@ -634,3 +634,32 @@ export const setCompanySuspended = functions
     functions.logger.info(`setCompanySuspended: ${companyId} suspend=${suspend} users=${uids.length} failed=${failed.length}`)
     res.json({ ok: true, companyId, suspend, total: uids.length, changed: uids.length - failed.length, failed })
   })
+
+
+// ─────────────────────────────────────────────
+// 10. 会社の一覧(GWLのクライアント台帳で「雇用LMS側の会社ID」を選ぶため)  [HR_LINK_V2]
+//     呼び出し: GET または POST、見出し x-gwl-link-secret: <合言葉>(9. と同じ)
+//     返すもの: 会社ID・会社名・状態・代理店かどうか。受講者の情報は返さない。
+// ─────────────────────────────────────────────
+export const listCompanies = functions
+  .region('asia-northeast1')
+  .https
+  .onRequest(async (req, res) => {
+    const secret = process.env.GWL_LINK_SECRET || ''
+    const given = String(req.get('x-gwl-link-secret') || '')
+    if (!secret || given !== secret) {
+      res.status(401).json({ error: 'unauthorized' })
+      return
+    }
+    const snap = await db.collection('companies').get()
+    const companies = snap.docs.map(d => {
+      const v = d.data() || {}
+      return {
+        id: d.id,
+        name: String(v.name ?? d.id),
+        status: String(v.status ?? 'active'),
+        isAgency: v.isAgency === true,
+      }
+    }).sort((a, b) => a.name.localeCompare(b.name, 'ja'))
+    res.json({ ok: true, companies })
+  })
