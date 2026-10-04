@@ -9,7 +9,7 @@ import SiteFooter from '@/components/SiteFooter'
    ============================================================ */
 const PRICING = {
   planName: '法人プラン',
-  price: null as string | null, // ← 確定したら '120,000' のように記入
+  price: '98,000' as string | null, // 2026-10-04 定価公開(LP・資料と同額)
   unit: '円 / 年(税別)・1社あたり',
   features: [
     '受講者向け 必修編14モジュール',
@@ -22,7 +22,7 @@ const PRICING = {
   ],
 }
 
-const GWL_URL = 'https://globalworkforce-lms.vercel.app'
+const GWL_URL = 'https://learn.globalworkforce.jp'
 
 export default function HomePage() {
   return (
@@ -305,6 +305,7 @@ export default function HomePage() {
                 <p className="text-[#1A3E6E]">
                   <span className="text-4xl font-bold">{PRICING.price}</span>
                   <span className="text-sm text-[#1A2433]/60 ml-2">{PRICING.unit}</span>
+                  <span className="block mt-2 text-sm text-[#1A2433]/70">受講人数無制限 ・ 初期費用0円／アカウント発行料0円</span>
                 </p>
               ) : (
                 <p className="text-sm text-[#1A2433]/70 leading-relaxed">
