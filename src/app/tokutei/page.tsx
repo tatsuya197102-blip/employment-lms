@@ -19,9 +19,9 @@ export default function TokuteiPage() {
           <span className="text-gray-500">※お問い合わせは原則メールにて承ります。</span>
         </LegalRow>
         <LegalRow label="メールアドレス">toiawase@promanga.jp</LegalRow>
-        <LegalRow label="販売URL">https://employment-lms.vercel.app</LegalRow>
+        <LegalRow label="販売URL">https://hr.globalworkforce.jp</LegalRow>
         <LegalRow label="販売価格">
-          企業規模・受講人数に応じた個別見積りとなります。お見積りフォームよりお問い合わせください。
+          法人プラン 年額98,000円(税別・1社あたり)。受講人数は無制限です。
         </LegalRow>
         <LegalRow label="商品代金以外の必要料金">
           銀行振込手数料、インターネット接続にかかる通信費用等はお客様のご負担となります。
