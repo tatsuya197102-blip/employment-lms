@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { db } from '@/lib/firebase'
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
+import { trackLead } from '@/components/Keisoku' // [KEISOKU_V1] 送信完了を Meta「Lead」/ GA4「generate_lead」として記録
 
 const TYPES = [
   { id: 'estimate', label: 'お見積り' },
@@ -88,6 +89,7 @@ function ContactForm() {
       console.error('mail send failed', err)
     }
 
+    if (saved || mailed) trackLead({ type, page: 'contact' }) // [KEISOKU_V1]
     setStatus(saved || mailed ? 'done' : 'error')
   }
 
