@@ -1,0 +1,9 @@
+===== 1. クイズのファイル =====
+  scripts/quiz_m25_m39_v2.json: 直した
+  scripts/quiz_m35_m39.json: 直した
+
+===== 2. M22 巻末の確認表 =====
+  直した
+
+===== 3. Firestore のクイズ =====
+  quizBank/M28: 2か所を直した
