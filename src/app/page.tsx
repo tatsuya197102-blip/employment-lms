@@ -22,7 +22,6 @@ const PRICING = {
   ],
 }
 
-const GWL_URL = 'https://learn.globalworkforce.jp'
 
 export default function HomePage() {
   return (

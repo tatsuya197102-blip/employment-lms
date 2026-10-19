@@ -40,13 +40,10 @@ const DICT = {
     { k: '初期費用', v: '0円。サーバー構築やシステム導入作業はありません。' },
     { k: '受講環境', v: 'PC・スマホのブラウザだけで受講できます。インストール不要。' },
     { k: '管理機能', v: '管理者ダッシュボードで、誰がどこまで学び、どのモジュールに合格したかを確認。受講アカウントはCSVで一括発行。' },
-    { k: '本人向けGWLとの併用', v: '外国人スタッフ本人向け「Global Workforce Learn」(16言語・受講者100名まで)は年額88,000円(税別)。両方ご利用の場合は合計156,000円(税別)です。' },
     { k: '始め方', v: 'メールでお問い合わせ → デモ・お見積り → ご契約(請求書払い) → アカウント一括発行。最短当日から受講できます。' },
   ],
-  contact: { heading: 'お問い合わせ・お見積り・デモのご依頼', cta: '問い合わせフォームへ', gwl: '本人向け「Global Workforce Learn」の紹介を見る' },
+  contact: { heading: 'お問い合わせ・お見積り・デモのご依頼', cta: '問い合わせフォームへ' },
 }
-
-const GWL_LP = 'https://learn.globalworkforce.jp/lp/gwl'
 
 export default function LpPage() {
   return (
@@ -58,34 +55,30 @@ export default function LpPage() {
             <span className="flex flex-col leading-tight"><span className="text-sm font-bold tracking-wide">GWL HR</span><span className="hidden sm:block text-[10px] font-normal text-[#4A5968]">人事・採用・現場の担当者が学ぶ、外国人雇用のルールと実務</span></span>
           </Link>
           <nav className="flex items-center gap-3 text-xs">
-            <a href={GWL_LP} className="hidden sm:inline text-[#4A5968] hover:underline">本人向け GWL</a>
             <Link href="/learn/login" className="rounded-full border border-[#1A2433] px-4 py-1.5 font-bold">受講者ログイン</Link>
           </nav>
         </div>
       </header>
 
       {/* ヒーロー */}
-      <section className="mx-auto max-w-5xl px-5 pt-14 pb-10">
-        <div className="grid items-end gap-8 md:grid-cols-[1.25fr_.75fr]">
-          <div>
-            <p className="inline-block rounded-full bg-[#E8EDF5] px-3 py-1 text-[11px] font-bold text-[#1A3E6E]">{DICT.eyebrow}</p>
-            <h1 className="mt-4 text-[30px] font-black leading-tight md:text-[46px]">
-              {DICT.title1}<br />{DICT.title2}
-            </h1>
-            <p className="mt-5 max-w-2xl text-[16px] leading-relaxed text-[#4A5968]">{DICT.lead}</p>
-            <div className="mt-7 flex flex-wrap items-center gap-5 rounded-2xl border border-[#E3E7EE] bg-white p-6">
-              <span className="rounded-lg bg-[#1A3E6E] px-3 py-2 text-xl font-black text-white">年額</span>
-              <span className="text-5xl font-black tracking-tight md:text-6xl">{DICT.price.amount}<span className="ml-1 text-2xl">円</span></span>
-              <div className="border-l-2 border-[#E3E7EE] pl-5 text-sm text-[#4A5968]">
-                <b className="block text-base text-[#1A3E6E]">{DICT.price.line1}</b>
-                {DICT.price.line2}<br />{DICT.price.line3}
-              </div>
-            </div>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link href="/contact" className="rounded-xl bg-[#C9553F] px-6 py-3.5 font-bold text-white shadow-[0_6px_0_#A64432] hover:translate-y-0.5 hover:shadow-[0_4px_0_#A64432]">{DICT.contact.cta}</Link>
+      <section className="mx-auto max-w-5xl px-5 pt-16 pb-14">
+        <p className="inline-block rounded-full bg-[#E8EDF5] px-4 py-1.5 text-xs font-bold text-[#1A3E6E]">{DICT.eyebrow}</p>
+        <h1 className="mt-5 text-[32px] font-black leading-tight md:text-[52px]">
+          {DICT.title1}<br />{DICT.title2}
+        </h1>
+        <p className="mt-6 max-w-3xl text-[16px] leading-relaxed text-[#4A5968] md:text-[17px]">{DICT.lead}</p>
+        <div className="mt-9 grid items-stretch gap-5 md:grid-cols-[1fr_auto]">
+          <div className="flex flex-wrap items-center gap-5 rounded-2xl border border-[#E3E7EE] bg-white p-6 shadow-sm md:p-7">
+            <span className="rounded-lg bg-[#1A3E6E] px-3 py-2 text-xl font-black text-white">年額</span>
+            <span className="text-5xl font-black tracking-tight md:text-6xl">{DICT.price.amount}<span className="ml-1 text-2xl">円</span></span>
+            <div className="border-l-2 border-[#E3E7EE] pl-5 text-sm text-[#4A5968]">
+              <b className="block text-base text-[#1A3E6E]">{DICT.price.line1}</b>
+              {DICT.price.line2}<br />{DICT.price.line3}
             </div>
           </div>
-          <div className="mx-auto w-full max-w-[220px] md:max-w-none"><img src="/lp/img/mia.png" alt="" className="w-full drop-shadow-xl" /></div>
+          <div className="flex items-center justify-center rounded-2xl bg-[#1A3E6E] p-6 md:px-8">
+            <Link href="/contact" className="rounded-xl bg-[#C9553F] px-7 py-4 text-center font-bold text-white shadow-[0_6px_0_#A64432] hover:translate-y-0.5 hover:shadow-[0_4px_0_#A64432]">{DICT.contact.cta}</Link>
+          </div>
         </div>
       </section>
 
@@ -166,7 +159,6 @@ export default function LpPage() {
         <div className="grid items-center gap-5 rounded-3xl bg-[#1A3E6E] p-8 text-white md:grid-cols-[1fr_auto]">
           <div>
             <h2 className="text-xl font-bold">{DICT.contact.heading}</h2>
-            <a href={GWL_LP} className="mt-2 inline-block text-sm text-white/80 underline underline-offset-4">{DICT.contact.gwl} →</a>
           </div>
           <Link href="/contact" className="rounded-xl bg-[#C9553F] px-6 py-3.5 text-center font-bold text-white shadow-[0_6px_0_#A64432]">{DICT.contact.cta}</Link>
         </div>
