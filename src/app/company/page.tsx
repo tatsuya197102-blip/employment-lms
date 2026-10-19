@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import LegalPageLayout, { LegalRow } from '@/components/LegalPageLayout'
 
 export const metadata: Metadata = {
-  title: '運営会社 | 外国人雇用LMS',
-  description: '外国人雇用LMSの運営会社情報です。',
+  title: '運営会社 | GWL HR',
+  description: 'GWL HRの運営会社情報です。',
 }
 
 export default function CompanyPage() {

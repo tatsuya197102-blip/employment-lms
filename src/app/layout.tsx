@@ -5,8 +5,8 @@ import { AuthProvider } from '@/contexts/AuthContext'
 import Keisoku from '@/components/Keisoku' // [KEISOKU_V1] 計測(Meta / GA4)。TOP・/lp・/contact だけで動く
 
 export const metadata: Metadata = {
-  title: '外国人雇用LMS | J-MANGA CREATE',
-  description: '外国人雇用研修 eラーニングシステム',
+  title: 'GWL HR — 人事・採用・現場の担当者が学ぶ、外国人雇用のルールと実務 | J-MANGA CREATE',
+  description: 'GWL HR — 人事・採用・現場の担当者が学ぶ、外国人雇用のルールと実務',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

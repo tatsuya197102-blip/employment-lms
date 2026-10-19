@@ -185,7 +185,7 @@ export default function LearnDashboard() {
       <header className="bg-primary text-white">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
-            <h1 className="font-bold text-lg">外国人雇用LMS</h1>
+            <h1 className="font-bold text-lg">GWL HR</h1>
             <p className="text-xs text-white/70 mt-0.5">{lmsUser?.displayName ?? user?.email}</p>
           </div>
           <div className="flex items-center gap-4">

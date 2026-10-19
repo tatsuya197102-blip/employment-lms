@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import LegalPageLayout, { LegalH2 } from '@/components/LegalPageLayout'
 
 export const metadata: Metadata = {
-  title: 'プライバシーポリシー | 外国人雇用LMS',
-  description: '外国人雇用LMSのプライバシーポリシーです。',
+  title: 'プライバシーポリシー | GWL HR',
+  description: 'GWL HRのプライバシーポリシーです。',
 }
 
 export default function PrivacyPage() {
@@ -11,7 +11,7 @@ export default function PrivacyPage() {
     <LegalPageLayout title="プライバシーポリシー" updatedAt="2027年4月1日">
       <p>
         株式会社J-MANGA
-        CREATE(以下「当社」といいます)は、外国人雇用研修eラーニングサービス「外国人雇用LMS」(以下「本サービス」といいます)における利用者の個人情報を、個人情報の保護に関する法律その他の関係法令を遵守し、以下のとおり取り扱います。
+        CREATE(以下「当社」といいます)は、外国人雇用研修eラーニングサービス「GWL HR」(以下「本サービス」といいます)における利用者の個人情報を、個人情報の保護に関する法律その他の関係法令を遵守し、以下のとおり取り扱います。
       </p>
 
       <LegalH2>1. 取得する情報</LegalH2>

@@ -1,22 +1,22 @@
-// [HR_LP_V1] /lp … 外国人雇用LMS 法人向け紹介ページ
+// [HR_LP_V1] /lp … GWL HR 法人向け紹介ページ
 // 文言は「雇用LMS_介護施設向けチラシ_v5」から転記。数字・文言を変えるときは下の DICT だけを直す。
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import SiteFooter from '@/components/SiteFooter'
 
 export const metadata: Metadata = {
-  title: '外国人雇用LMS 法人向け | 外国人スタッフの雇用を、「知らなかった」で済ませない。',
+  title: 'GWL HR 法人向け — 人事・採用・現場の担当者が学ぶ、外国人雇用のルールと実務 | 外国人スタッフの雇用を、「知らなかった」で済ませない。',
   description:
-    '施設長・人事担当者・現場管理職向けの外国人雇用研修 eラーニング。在留資格の確認から採用・労務管理、育成就労制度への移行、定着支援まで、冊子・動画・クイズで。年額98,000円(税別)・1施設あたり定額・受講人数無制限。',
+    '施設長・人事担当者・現場管理職向けの外国人雇用研修 eラーニング。在留資格の確認から採用・労務管理、育成就労制度への移行、定着支援まで、冊子・動画・クイズで。年額68,000円(税別)・1施設あたり定額・受講人数無制限。',
   alternates: { canonical: '/lp' },
 }
 
 const DICT = {
-  eyebrow: '施設長・人事担当者・現場管理職向け 外国人雇用研修 eラーニング　外国人雇用LMS',
+  eyebrow: 'GWL HR — 人事・採用・現場の担当者が学ぶ、外国人雇用のルールと実務',
   title1: '外国人スタッフの雇用を、',
   title2: '「知らなかった」で済ませない。',
   lead: '在留資格の確認から採用・労務管理、育成就労制度への移行、定着支援まで。外国人スタッフを受け入れる施設の人事担当者と現場管理職が、実務に必要な知識を冊子・動画・クイズで身につけられるeラーニングです。',
-  price: { amount: '98,000', line1: '1年間・1施設あたり定額・受講人数無制限', line2: '税別。月あたり約8,200円', line3: '初期費用0円／アカウント発行料0円' },
+  price: { amount: '68,000', line1: '1年間・1施設あたり定額・受講人数無制限', line2: '税別。月あたり約5,700円', line3: '初期費用0円／アカウント発行料0円' },
   law: {
     heading: '2027年4月、不法就労助長罪の罰則が厳罰化されます。同時に技能実習は「育成就労制度」へ移行(本サービスは専用モジュールで対応済み)',
     now: { label: '現行', a: '3年以下の拘禁刑', b: '300万円以下の罰金' },
@@ -36,11 +36,11 @@ const DICT = {
     practice: { t: '実践編 10モジュール', sub: '現場管理職・労務責任者向け', items: ['やさしい日本語の実践／生活支援の実務', 'キャリアパスと評価・処遇', '離職予防とトラブルの早期発見', '育成就労制度への移行対応', '雇用契約と労働条件／コンプライアンス ほか'] },
   },
   table: [
-    { k: '料金', v: '年額 98,000円(税別・1施設あたり)。1年間の定額で、受講人数は無制限。月額課金や1人あたりの課金はありません。' },
+    { k: '料金', v: '年額 68,000円(税別・1施設あたり)。1年間の定額で、受講人数は無制限。月額課金や1人あたりの課金はありません。' },
     { k: '初期費用', v: '0円。サーバー構築やシステム導入作業はありません。' },
     { k: '受講環境', v: 'PC・スマホのブラウザだけで受講できます。インストール不要。' },
     { k: '管理機能', v: '管理者ダッシュボードで、誰がどこまで学び、どのモジュールに合格したかを確認。受講アカウントはCSVで一括発行。' },
-    { k: '本人向けとのセット', v: '外国人スタッフ本人向け「Global Workforce Learn」(16言語・受講者100名まで)とのセットは年額144,000円(税別)。単品合算より約23%お得です。' },
+    { k: '本人向けGWLとの併用', v: '外国人スタッフ本人向け「Global Workforce Learn」(16言語・受講者100名まで)は年額88,000円(税別)。両方ご利用の場合は合計156,000円(税別)です。' },
     { k: '始め方', v: 'メールでお問い合わせ → デモ・お見積り → ご契約(請求書払い) → アカウント一括発行。最短当日から受講できます。' },
   ],
   contact: { heading: 'お問い合わせ・お見積り・デモのご依頼', cta: '問い合わせフォームへ', gwl: '本人向け「Global Workforce Learn」の紹介を見る' },
@@ -55,7 +55,7 @@ export default function LpPage() {
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-5">
           <Link href="/" className="flex items-center gap-3">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#1A3E6E] text-[11px] font-bold text-white">JMC</span>
-            <span className="text-sm font-bold tracking-wide">外国人雇用LMS</span>
+            <span className="flex flex-col leading-tight"><span className="text-sm font-bold tracking-wide">GWL HR</span><span className="hidden sm:block text-[10px] font-normal text-[#4A5968]">人事・採用・現場の担当者が学ぶ、外国人雇用のルールと実務</span></span>
           </Link>
           <nav className="flex items-center gap-3 text-xs">
             <a href={GWL_LP} className="hidden sm:inline text-[#4A5968] hover:underline">本人向け GWL</a>

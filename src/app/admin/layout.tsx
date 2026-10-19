@@ -43,7 +43,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="min-h-screen bg-[#F4F2EE] flex">
       <aside className="w-56 bg-primary text-white flex flex-col shrink-0">
         <div className="px-5 py-6 border-b border-white/10">
-          <p className="font-bold text-sm">外国人雇用LMS</p>
+          <p className="font-bold text-sm">GWL HR</p>
           <p className="text-xs text-white/60 mt-0.5">管理者パネル</p>
         </div>
         <nav className="flex-1 px-3 py-4 space-y-1">

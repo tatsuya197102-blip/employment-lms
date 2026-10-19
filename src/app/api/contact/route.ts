@@ -26,10 +26,10 @@ export async function POST(req: Request) {
   const resend = new Resend(apiKey)
   try {
     await resend.emails.send({
-      from: `外国人雇用LMS <${FROM}>`,
+      from: `GWL HR <${FROM}>`,
       to: TO,
       replyTo: email,
-      subject: `【外国人雇用LMS】${typeLabel ?? 'お問い合わせ'}: ${company}`,
+      subject: `【GWL HR】${typeLabel ?? 'お問い合わせ'}: ${company}`,
       text: [
         `種別: ${typeLabel ?? '-'}`,
         `会社名: ${company}`,

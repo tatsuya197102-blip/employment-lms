@@ -203,7 +203,7 @@ export default function AgenciesPage() {
   /** 代理店にそのまま送れる案内文を作る */
   const buildHandout = (r: IssueResult) =>
     [
-      `【外国人雇用LMS ログイン情報】${r.companyName} 様`,
+      `【GWL HR ログイン情報】${r.companyName} 様`,
       '',
       `■ 管理者用（受講状況の確認・受講者の登録）`,
       `URL      : https://hr.globalworkforce.jp/admin/login`,
@@ -252,7 +252,7 @@ export default function AgenciesPage() {
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
             <h1 className="font-bold text-lg">代理店アカウント発行</h1>
-            <p className="text-xs text-white/70 mt-0.5">外国人雇用LMS 管理</p>
+            <p className="text-xs text-white/70 mt-0.5">GWL HR 管理</p>
           </div>
           <Link href="/admin" className="text-xs text-white/70 hover:text-white">
             管理トップへ

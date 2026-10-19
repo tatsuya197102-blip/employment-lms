@@ -31,7 +31,8 @@ export default function AdminLoginPage() {
     <div className="min-h-screen bg-primary flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-white">外国人雇用LMS</h1>
+          <h1 className="text-2xl font-bold text-white">GWL HR</h1>
+          <p className="text-xs text-white/60 mt-1">人事・採用・現場の担当者が学ぶ、外国人雇用のルールと実務</p>
           <p className="text-sm text-white/60 mt-1">管理者ログイン</p>
         </div>
         <div className="bg-white rounded-2xl shadow-lg p-8">

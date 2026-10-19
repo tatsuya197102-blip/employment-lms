@@ -20,7 +20,7 @@ export default function LegalPageLayout({
       <header className="bg-[#1A3E6E] text-white">
         <div className="mx-auto max-w-4xl px-6 py-4 flex items-center justify-between">
           <Link href="/" className="font-bold text-lg hover:opacity-80">
-            外国人雇用LMS
+            GWL HR
           </Link>
           <Link href="/" className="text-sm underline underline-offset-4 hover:opacity-80">
             トップへ戻る

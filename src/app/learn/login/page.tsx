@@ -35,7 +35,8 @@ export default function LearnLoginPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary mb-4">
             <span className="text-white font-bold text-xl">JMC</span>
           </div>
-          <h1 className="text-2xl font-bold text-primary">外国人雇用LMS</h1>
+          <h1 className="text-2xl font-bold text-primary">GWL HR</h1>
+          <p className="text-xs text-gray-500 mt-1">人事・採用・現場の担当者が学ぶ、外国人雇用のルールと実務</p>
           <p className="text-sm text-gray-500 mt-1">受講者ログイン</p>
         </div>
 
@@ -86,7 +87,7 @@ export default function LearnLoginPage() {
         </div>
 
         <p className="text-center text-xs text-gray-400 mt-6">
-          © J-MANGA CREATE — 外国人雇用LMS
+          © J-MANGA CREATE — GWL HR
         </p>
       </div>
     </div>

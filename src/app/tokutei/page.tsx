@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import LegalPageLayout, { LegalRow } from '@/components/LegalPageLayout'
 
 export const metadata: Metadata = {
-  title: '特定商取引法に基づく表記 | 外国人雇用LMS',
-  description: '外国人雇用LMSの特定商取引法に基づく表記です。',
+  title: '特定商取引法に基づく表記 | GWL HR',
+  description: 'GWL HRの特定商取引法に基づく表記です。',
 }
 
 export default function TokuteiPage() {
@@ -21,7 +21,7 @@ export default function TokuteiPage() {
         <LegalRow label="メールアドレス">toiawase@promanga.jp</LegalRow>
         <LegalRow label="販売URL">https://hr.globalworkforce.jp</LegalRow>
         <LegalRow label="販売価格">
-          法人プラン 年額98,000円(税別・1社あたり)。受講人数は無制限です。
+          GWL HR 法人プラン 年額68,000円(税別・1社あたり)。受講人数は無制限です。
         </LegalRow>
         <LegalRow label="商品代金以外の必要料金">
           銀行振込手数料、インターネット接続にかかる通信費用等はお客様のご負担となります。

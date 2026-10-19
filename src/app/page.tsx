@@ -8,8 +8,8 @@ import SiteFooter from '@/components/SiteFooter'
    null の間は「個別にご案内」表示になります。
    ============================================================ */
 const PRICING = {
-  planName: '法人プラン',
-  price: '98,000' as string | null, // 2026-10-04 定価公開(LP・資料と同額)
+  planName: 'GWL HR 法人プラン',
+  price: '68,000' as string | null, // 2026-10-19 新価格(GWL HRに改称・セット割引廃止)
   unit: '円 / 年(税別)・1社あたり',
   features: [
     '受講者向け 必修編14モジュール',
@@ -33,7 +33,7 @@ export default function HomePage() {
           <div className="w-9 h-9 bg-[#1A3E6E] text-white rounded-lg flex items-center justify-center font-bold text-xs">
             JMC
           </div>
-          <span className="font-bold text-sm tracking-wide">外国人雇用LMS</span>
+          <span className="flex flex-col leading-tight"><span className="font-bold text-sm tracking-wide">GWL HR</span><span className="text-[10px] text-[#1A2433]/60">人事・採用・現場の担当者が学ぶ、外国人雇用のルールと実務</span></span>
         </div>
         <div className="flex items-center gap-2 text-sm">
           <Link
@@ -54,7 +54,7 @@ export default function HomePage() {
       {/* ヒーロー */}
       <section className="max-w-6xl mx-auto px-6 pt-16 pb-20 text-center">
         <p className="text-xs font-semibold tracking-[0.25em] text-[#8A6D1F] mb-5">
-          外国人雇用の企業内研修プラットフォーム
+          GWL HR — 人事・採用・現場の担当者が学ぶ、外国人雇用のルールと実務
         </p>
         <h1 className="text-4xl md:text-6xl font-bold leading-tight text-[#1A3E6E] mb-6">
           外国人雇用を、
@@ -306,6 +306,7 @@ export default function HomePage() {
                   <span className="text-4xl font-bold">{PRICING.price}</span>
                   <span className="text-sm text-[#1A2433]/60 ml-2">{PRICING.unit}</span>
                   <span className="block mt-2 text-sm text-[#1A2433]/70">受講人数無制限 ・ 初期費用0円／アカウント発行料0円</span>
+                  <span className="block mt-3 text-xs text-[#1A2433]/60 leading-relaxed">外国人スタッフ本人向け「Global Workforce Learn」(年額88,000円・受講者100名まで)と両方ご利用の場合は、合計156,000円(税別)です。</span>
                 </p>
               ) : (
                 <p className="text-sm text-[#1A2433]/70 leading-relaxed">
