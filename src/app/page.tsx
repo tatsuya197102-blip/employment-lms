@@ -306,7 +306,6 @@ export default function HomePage() {
                   <span className="text-4xl font-bold">{PRICING.price}</span>
                   <span className="text-sm text-[#1A2433]/60 ml-2">{PRICING.unit}</span>
                   <span className="block mt-2 text-sm text-[#1A2433]/70">受講人数無制限 ・ 初期費用0円／アカウント発行料0円</span>
-                  <span className="block mt-3 text-xs text-[#1A2433]/60 leading-relaxed">外国人スタッフ本人向け「Global Workforce Learn」(年額88,000円・受講者100名まで)と両方ご利用の場合は、合計156,000円(税別)です。</span>
                 </p>
               ) : (
                 <p className="text-sm text-[#1A2433]/70 leading-relaxed">
