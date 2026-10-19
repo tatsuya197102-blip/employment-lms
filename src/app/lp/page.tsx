@@ -16,7 +16,7 @@ const DICT = {
   title1: '外国人スタッフの雇用を、',
   title2: '「知らなかった」で済ませない。',
   lead: '在留資格の確認から採用・労務管理、育成就労制度への移行、定着支援まで。外国人スタッフを受け入れる施設の人事担当者と現場管理職が、実務に必要な知識を冊子・動画・クイズで身につけられるeラーニングです。',
-  price: { amount: '68,000', line1: '1年間・1施設あたり定額・受講人数無制限', line2: '税別。月あたり約5,700円', line3: '初期費用0円／アカウント発行料0円' },
+  price: { amount: '68,000', line1: '1年間・1施設あたり定額・受講人数無制限', line2: '税別。月あたり約5,700円', line3: '初期費用0円／アカウント発行料0円', line4: '2週間の無料お試しあり' },
   law: {
     heading: '2027年4月、不法就労助長罪の罰則が厳罰化されます。同時に技能実習は「育成就労制度」へ移行(本サービスは専用モジュールで対応済み)',
     now: { label: '現行', a: '3年以下の拘禁刑', b: '300万円以下の罰金' },
@@ -40,7 +40,7 @@ const DICT = {
     { k: '初期費用', v: '0円。サーバー構築やシステム導入作業はありません。' },
     { k: '受講環境', v: 'PC・スマホのブラウザだけで受講できます。インストール不要。' },
     { k: '管理機能', v: '管理者ダッシュボードで、誰がどこまで学び、どのモジュールに合格したかを確認。受講アカウントはCSVで一括発行。' },
-    { k: '始め方', v: 'メールでお問い合わせ → デモ・お見積り → ご契約(請求書払い) → アカウント一括発行。最短当日から受講できます。' },
+    { k: '始め方', v: 'メールでお問い合わせ → 2週間の無料お試し → ご契約(請求書払い) → アカウント一括発行。最短当日から受講できます。' },
   ],
   contact: { heading: 'お問い合わせ・お見積り・デモのご依頼', cta: '問い合わせフォームへ' },
 }
@@ -73,7 +73,7 @@ export default function LpPage() {
             <span className="text-5xl font-black tracking-tight md:text-6xl">{DICT.price.amount}<span className="ml-1 text-2xl">円</span></span>
             <div className="border-l-2 border-[#E3E7EE] pl-5 text-sm text-[#4A5968]">
               <b className="block text-base text-[#1A3E6E]">{DICT.price.line1}</b>
-              {DICT.price.line2}<br />{DICT.price.line3}
+              {DICT.price.line2}<br />{DICT.price.line3}<br /><b className="text-[#C9553F]">{DICT.price.line4}</b>
             </div>
           </div>
           <div className="flex items-center justify-center rounded-2xl bg-[#1A3E6E] p-6 md:px-8">

@@ -286,7 +286,7 @@ export default function HomePage() {
             href="/contact?type=demo"
             className="inline-block bg-[#C8A84B] text-[#132B4D] font-bold px-8 py-3 rounded-lg hover:opacity-90 transition"
           >
-            デモアカウントを申し込む(無料)
+            2週間無料で試す
           </Link>
         </div>
       </section>
