@@ -1,6 +1,9 @@
 'use client'
 
+// [HR_BOOK_GUARD_V1] 冊子はログイン確認つきの /api/book/{id} から取得し、iframe の srcDoc に入れて表示する
+// (以前は public/manual.html・public/books/*.html を直接開いていたため、ログインなしでも読めた)
 import { useEffect, useRef, useState, useCallback } from 'react'
+import { auth } from '@/lib/firebase'
 
 interface Props {
   moduleId: string
@@ -22,6 +25,32 @@ export default function BookViewer({
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const completedRef = useRef(initialPercent >= 80)
   const [percent, setPercent] = useState(initialPercent)
+  const [html, setHtml] = useState<string | null>(null)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    let alive = true
+    setHtml(null)
+    setError('')
+    ;(async () => {
+      try {
+        await auth.authStateReady()
+        const u = auth.currentUser
+        if (!u) throw new Error('not signed in')
+        const token = await u.getIdToken()
+        const r = await fetch(`/api/book/${encodeURIComponent(moduleId)}`, {
+          headers: { Authorization: `Bearer ${token}` },
+          cache: 'no-store',
+        })
+        if (!r.ok) throw new Error(String(r.status))
+        const text = await r.text()
+        if (alive) setHtml(text)
+      } catch {
+        if (alive) setError('冊子を読み込めませんでした。ページを再読み込みするか、ログインし直してください。')
+      }
+    })()
+    return () => { alive = false }
+  }, [moduleId])
 
   const handleLoad = useCallback(() => {
     const iframe = iframeRef.current
@@ -81,13 +110,19 @@ export default function BookViewer({
           </span>
         )}
       </div>
-      <iframe
-        ref={iframeRef}
-        src={Number(moduleId.slice(1)) >= 15 ? `/books/${moduleId}.html` : '/manual.html?v=2'}
-        onLoad={handleLoad}
-        className="flex-1 w-full border-0"
-        sandbox="allow-same-origin allow-scripts"
-      />
+      {error ? (
+        <div className="flex-1 flex items-center justify-center p-6 text-sm text-gray-600">{error}</div>
+      ) : html === null ? (
+        <div className="flex-1 flex items-center justify-center p-6 text-sm text-gray-400">冊子を読み込み中…</div>
+      ) : (
+        <iframe
+          ref={iframeRef}
+          srcDoc={html}
+          onLoad={handleLoad}
+          className="flex-1 w-full border-0"
+          sandbox="allow-same-origin allow-scripts"
+        />
+      )}
     </div>
   )
 }
